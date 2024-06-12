@@ -1,36 +1,35 @@
+// eslint-disable-next-line no-unused-vars
 import React from 'react';
 import "./main1.scss"
 import {style} from "../../utils/style.js";
 
 
-function Main1(props) {
+function Main1() {
     return (
 
         <div className='main'>
             <div className={`${style.container}`}>
-                <div className="flex grid-cols-2 gap-5 xl:gap-16">
-                    <div className='px-3 py-10 lg:py-20 md:px-0'>
-                        <div className="text-white text-2xl md:text-4xl lg:text-6xl font-bold" style={{lineHeight:"130%"}}>
-                            Xitoy elektr tovarlarini ulgurji narxlarda xarid qiling
-                        </div>
+                <div className="grid grid-cols-3 gap-5 xl:gap-16 mt-20">
+                    <div className="">
+                        <p className='text-white text-6xl font-bold uppercase'>
+                            find friend youre life
+                        </p>
+                        <div className=" w-full bg-white rounded-3xl drop-shadow-2xl mt-10 p-5">
+                            Lorem ipsum dolor sit amet, consectetur adipisicing elit. Aperiam assumenda autem dicta
+                            doloremque enim fuga fugit ipsam itaque iure mollitia nisi omnis perferendis quia ratione
+                            rem repellat, tempore tenetur ut vitae voluptatum! Alias consectetur consequuntur corporis,
+                            cum doloremque iste itaque, laborum magnam minima nulla perspiciatis quia reiciendis
+                            temporibus, velit vitae voluptate voluptatem? Accusantium aliquam atque, autem consequatur
+                            delectus eos et, eveniet ipsam nesciunt pariatur porro quas repellat tempora totam, velit!
+                            Ad aliquid autem commodi esse est et quaerat, ratione velit veniam! Ab aliquid aspernatur
+                            autem corporis cumque delectus dicta dolorem doloribus eaque enim error esse eum fuga hic in
+                            iure maiores minus molestiae mollitia nobis non numquam omnis, perferendis possimus quam quo
+                            quod reiciendis rem repellendus similique ullam vitae voluptates voluptatum. Ab adipisci
 
-                        <div className="md:grid grid-cols-3 mt-5 md:mt-10 text-sm xl:text-2xl font-bold text-white">
-                            <div className='flex md:block mt-3 md:mt-0'>
-                                <img className='w-1/12 md:w-10' src="./img/kafolat.svg" alt=""/>
-                                <div className="mt-0 ml-3 md:mt-3 md:ml-0">1 yil kafolat</div>
-                            </div>
-                            <div className='flex md:block mt-3 md:mt-0'>
-                                <img className='w-1/12 md:w-10' src="./img/konsultant.svg" alt=""/>
-                                <div className=" mt-0 ml-3 md:mt-3 md:ml-0">Foydalanishda bepul konsultatsiya</div>
-                            </div>
-                            <div className='flex md:block mt-3 md:mt-0'>
-                                <img className='w-1/12 md:w-10' src="./img/eltuv.svg" alt=""/>
-                                <div className=" mt-0 ml-3 md:mt-3 md:ml-0">1 kunda tezkor yetkazib berish</div>
-                            </div>
-                        </div>
 
+                        </div>
                     </div>
-                    <img src="./img/shit.png" className='hidden md:block md:w-5/12 pt-10 lg:pt-14 md:pb-14' alt=""/>
+                    <img className="col-span-2 w-90 " src="./img/aimg1.png" alt=""/>
                 </div>
 
             </div>
