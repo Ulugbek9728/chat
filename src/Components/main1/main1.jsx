@@ -1,8 +1,7 @@
-// eslint-disable-next-line no-unused-vars
-import React, {useState} from 'react';
 import "./main1.scss"
 import {style} from "../../utils/style.js";
 import { Radio, Select  } from 'antd';
+import DarkMode from "../darkMode/darkMode.jsx";
 
 function Main1() {
 
@@ -10,12 +9,17 @@ function Main1() {
 
         <div className='main'>
             <div className={`${style.container}`}>
-                <div className="grid grid-cols-3 gap-5 xl:gap-16 mt-40">
-                    <div>
-                        <p className='text-white text-6xl font-bold uppercase'>
+                <div className="grid grid-cols-2 gap-5 xl:gap-16 mt-32">
+                    <div className=''>
+                        <p className='text-white text-4xl font-bold uppercase'>
                             find friend youre life
                         </p>
                         <div className=" w-full bg-white rounded-3xl drop-shadow-2xl mt-10 p-5">
+                            <div className="flex gap-2">
+                                <span>Kunduzgi rejim</span>
+                                <DarkMode/>
+                                <span>Tungi rejim</span>
+                            </div>
                             <div className='flex py-7'>
                                 <h1 className='text-2xl'>I am a:</h1>
                                 <div className='ml-4 text-2xl'>
@@ -25,7 +29,6 @@ function Main1() {
                                     </Radio.Group>
                                 </div>
                             </div>
-                            {/*<hr/>*/}
                             <div className='flex py-7 border border-b-gray border-t-gray border-l-0 border-r-0'>
                                 <h1 className='text-2xl'>Seeking a:</h1>
                                 <div className='ml-4 text-2xl'>
@@ -35,7 +38,6 @@ function Main1() {
                                     </Radio.Group>
                                 </div>
                             </div>
-                            {/*<hr/>*/}
                             <div className='flex py-7'>
                                 <h1 className='text-2xl'>Ages:</h1>
                                 <div className='ml-4 text-2xl'>
@@ -89,12 +91,12 @@ function Main1() {
                                 </div>
                             </div>
                             <div className="flex my-10">
-                                <button className='text-lg text-white' >Join Now!</button>
+                                <button className='defultButontext-lg text-white' >Join Now!</button>
                             </div>
 
                         </div>
                     </div>
-                    <img className="col-span-2 w-90 " src="./img/aimg1.png" alt=""/>
+                    <img className="aim" src="./img/aim1.png" alt=""/>
                 </div>
 
             </div>

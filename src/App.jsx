@@ -8,10 +8,13 @@ import Main4 from "./Components/main4/main4.jsx";
 import Main5 from "./Components/main5/main5.jsx";
 import Footer from "./Components/footer/footer.jsx";
 
-
 function App() {
+
+
+
+
     return (
-        <div className='App'>
+        <div className={`App ${localStorage.getItem("tema")? '': "dark"}`}>
             <Navbar/>
             <Main1/>
             <Main2/>

@@ -1,9 +1,13 @@
 .main{
-  button{
+  .defultButontext-lg{
     margin: 0 auto;
-    background: linear-gradient(0.4turn,#d92a91, #881bc7);
+    background: #172554;
     border-radius: 20px;
     padding: 10px 30px;
-    box-shadow: 0 10px 50px #881bc7;  }
+    box-shadow: 0 10px 50px #172554;
+  }
+  .aim{
+    width: 100%;
+  }
 
 }

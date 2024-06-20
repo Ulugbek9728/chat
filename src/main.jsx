@@ -7,8 +7,7 @@ import {
 } from "react-router-dom";
 import "./main.css"
 import PageNotFound from "./Components/PageNotFound.jsx";
-import Team from "./Components/team/team.jsx";
-import Project from "./Components/project/project.jsx";
+import "./utils/i18n";
 
 const router=createBrowserRouter([
     {
@@ -19,14 +18,14 @@ const router=createBrowserRouter([
 
         ]
     },
-    {
-        path: "team",
-        element: <Team/>,
-    },
-    {
-        path: "projects",
-        element: <Project/>,
-    },
+    // {
+    //     path: "team",
+    //     element: <Team/>,
+    // },
+    // {
+    //     path: "projects",
+    //     element: <Project/>,
+    // },
 
 ])
 
