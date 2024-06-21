@@ -3,5 +3,11 @@
   background-image: url("./img/Bk4Ev.png");
   background-repeat: no-repeat;
   background-size: 100% 100vh;
-  background-color: #f7f9fd;
+
+  label{
+    &::before{
+      content: '';
+      width: 0!important;
+    }
+  }
 }

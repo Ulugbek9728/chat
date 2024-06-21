@@ -1,6 +1,6 @@
 import "./main1.scss"
 import {style} from "../../utils/style.js";
-import { Radio, Select  } from 'antd';
+import { Flex, Radio } from 'antd';
 import DarkMode from "../darkMode/darkMode.jsx";
 
 function Main1() {
@@ -9,94 +9,79 @@ function Main1() {
 
         <div className='main'>
             <div className={`${style.container}`}>
-                <div className="grid grid-cols-2 gap-5 xl:gap-16 mt-32">
+                <div className="grid grid-cols-2 gap-5 xl:gap-16 ">
                     <div className=''>
                         <p className='text-white text-4xl font-bold uppercase'>
                             find friend youre life
                         </p>
-                        <div className=" w-full bg-white rounded-3xl drop-shadow-2xl mt-10 p-5">
+                        <div className=" dark:bg-primary w-full bg-blue-50 rounded-3xl drop-shadow-2xl mt-10 p-5">
                             <div className="flex gap-2">
-                                <span>Kunduzgi rejim</span>
                                 <DarkMode/>
-                                <span>Tungi rejim</span>
                             </div>
-                            <div className='flex py-7'>
-                                <h1 className='text-2xl'>I am a:</h1>
-                                <div className='ml-4 text-2xl'>
-                                    <Radio.Group >
-                                        <Radio value={1} className='text-lg uppercase'>Male</Radio>
-                                        <Radio value={2} className='text-lg uppercase'>Female</Radio>
-                                    </Radio.Group>
+                            <p className='mt-5'>Тема общения:</p>
+                            <Flex vertical gap="middle">
+                                <Radio.Group defaultValue="a" buttonStyle="solid" className='h-11 flex justify-between'>
+                                    <Radio.Button className='bg-slate-800 rounded-lg text-white h-full pt-1.5 px-16' value="a">Oбшение</Radio.Button>
+                                    <Radio.Button className='bg-slate-800 rounded-lg text-white h-full pt-1.5 px-16 ' value="b">Флирт 18+</Radio.Button>
+                                    <Radio.Button className='bg-slate-800 rounded-lg text-white h-full pt-1.5 px-16 ' value="c">Ролка</Radio.Button>
+                                </Radio.Group>
+                            </Flex>
+                            <div className="grid grid-cols-2 gap-4 mt-3">
+                                <div className="w-full">
+                                    <p>Ваш пол:</p>
+                                    <Flex vertical gap="middle">
+                                        <Radio.Group defaultValue="a" buttonStyle="solid" className='h-11'>
+                                            <Radio.Button className='bg-slate-800 text-white h-full w-24 pt-1.5' value="a">Некто</Radio.Button>
+                                            <Radio.Button className='bg-slate-800 text-white h-full w-20 pt-1.5' value="b">M</Radio.Button>
+                                            <Radio.Button className='bg-slate-800 text-white h-full w-20 pt-1.5' value="c">Ж</Radio.Button>
+                                        </Radio.Group>
+                                    </Flex>
+                                </div>
+                                <div className="w-full">
+                                    <p>Пол собеседника:</p>
+                                    <Flex vertical gap="middle">
+                                        <Radio.Group defaultValue="a" buttonStyle="solid" className='h-11'>
+                                            <Radio.Button className='bg-slate-800 text-white h-full w-24 pt-1.5' value="a">Не важно</Radio.Button>
+                                            <Radio.Button className='bg-slate-800 text-white h-full w-20 pt-1.5' value="b">M</Radio.Button>
+                                            <Radio.Button className='bg-slate-800 text-white h-full w-20 pt-1.5' value="c">Ж</Radio.Button>
+                                        </Radio.Group>
+                                    </Flex>
                                 </div>
                             </div>
-                            <div className='flex py-7 border border-b-gray border-t-gray border-l-0 border-r-0'>
-                                <h1 className='text-2xl'>Seeking a:</h1>
-                                <div className='ml-4 text-2xl'>
-                                    <Radio.Group>
-                                        <Radio value={1} className='text-lg uppercase'>Man</Radio>
-                                        <Radio value={2} className='text-lg uppercase'>Woman</Radio>
-                                    </Radio.Group>
+                            <div className="grid grid-cols-2 gap-4 mt-3">
+                                <div className="flex flex-col gap-2">
+                                    <p>Пол собеседника:</p>
+                                    <Flex vertical={false} gap="middle">
+                                        <Radio.Group defaultValue="a" buttonStyle="solid" className=''>
+                                            <Radio.Button className='bg-slate-800 rounded-lg mt-2 w-full text-white h-11 pt-1.5' value="a">Oбшение</Radio.Button>
+                                            <Radio.Button className='bg-slate-800 rounded-lg mt-2 w-full text-white h-11 pt-1.5' value="b">Флирт 18+</Radio.Button>
+                                            <Radio.Button className='bg-slate-800 rounded-lg mt-2 w-full text-white h-11 pt-1.5' value="d">Ролка</Radio.Button>
+                                            <Radio.Button className='bg-slate-800 rounded-lg mt-2 w-full text-white h-11 pt-1.5' value="e">Флирт 18+</Radio.Button>
+                                            <Radio.Button className='bg-slate-800 rounded-lg mt-2 w-full text-white h-11 pt-1.5' value="f">Ролка</Radio.Button>
+                                        </Radio.Group>
+                                    </Flex>
+                                </div>
+                                <div className="flex flex-col gap-2">
+                                    <p>Пол собеседника:</p>
+                                    <Flex vertical={false} gap="middle">
+                                        <Radio.Group defaultValue="a" buttonStyle="solid" className=''>
+                                            <Radio.Button className='bg-slate-800 rounded-lg mt-2 w-full text-white h-11 pt-1.5' value="a">Oбшение</Radio.Button>
+                                            <Radio.Button className='bg-slate-800 rounded-lg mt-2 w-full text-white h-11 pt-1.5' value="b">Флирт 18+</Radio.Button>
+                                            <Radio.Button className='bg-slate-800 rounded-lg mt-2 w-full text-white h-11 pt-1.5' value="d">Ролка</Radio.Button>
+                                            <Radio.Button className='bg-slate-800 rounded-lg mt-2 w-full text-white h-11 pt-1.5' value="e">Флирт 18+</Radio.Button>
+                                            <Radio.Button className='bg-slate-800 rounded-lg mt-2 w-full text-white h-11 pt-1.5' value="f">Ролка</Radio.Button>
+                                        </Radio.Group>
+                                    </Flex>
                                 </div>
                             </div>
-                            <div className='flex py-7'>
-                                <h1 className='text-2xl'>Ages:</h1>
-                                <div className='ml-4 text-2xl'>
-                                    <Select
-                                        style={{
-                                            width: 60, marginRight:10
-                                        }}
-                                        defaultValue={{
-                                            value: '18',
-                                            label: '18',
-                                        }}
-                                        options={[
-                                            {
-                                                value: '18',
-                                                label: '18',
-                                            },
-                                            {
-                                                value: '20',
-                                                label: '20',
-                                            },
-                                            {
-                                                value: '24',
-                                                label: '24',
-                                            },
-                                        ]}
-                                    />
-                                    -
-                                    <Select
-                                        style={{
-                                            width: 60, marginLeft: 10
-                                        }}
-                                        defaultValue={{
-                                            value: '30',
-                                            label: '30',
-                                        }}
-                                        options={[
-                                            {
-                                                value: '30',
-                                                label: '30',
-                                            },
-                                            {
-                                                value: '35',
-                                                label: '35',
-                                            },
-                                            {
-                                                value: '40',
-                                                label: '40',
-                                            },
-                                        ]}
-                                    />
-                                </div>
-                            </div>
-                            <div className="flex my-10">
-                                <button className='defultButontext-lg text-white' >Join Now!</button>
+                            <div className="flex justify-center">
+                                <button className='text-lg text-white Partner mt-10 mb-5 px-9 py-2.5 my-20 ' >Начать чат</button>
+
                             </div>
 
                         </div>
                     </div>
-                    <img className="aim" src="./img/aim1.png" alt=""/>
+                    <img className="aim mt-32" src="./img/aim1.png" alt=""/>
                 </div>
 
             </div>

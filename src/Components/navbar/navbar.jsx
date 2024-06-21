@@ -11,7 +11,7 @@ function Navbar() {
                 <NavLink to="/" className="flex items-center space-x-3 rtl:space-x-reverse">
                     <img src="./logo.png" className="h-14" alt="Flowbite Logo"/>
                     <span
-                        className="self-center text-2xl font-semibold whitespace-nowrap dark:text-white">Logo name</span>
+                        className="self-center text-2xl font-semibold whitespace-nowrap text-white">Logo name</span>
                 </NavLink>
                 <div className="flex items-center space-x-6 rtl:space-x-reverse">
                     <LanguageSwitcher/>
