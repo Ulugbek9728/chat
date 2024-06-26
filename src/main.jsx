@@ -8,6 +8,7 @@ import {
 import "./main.css"
 import PageNotFound from "./Components/PageNotFound.jsx";
 import "./utils/i18n";
+import Chat from "@/Components/chat/chat.jsx";
 
 const router=createBrowserRouter([
     {
@@ -18,10 +19,10 @@ const router=createBrowserRouter([
 
         ]
     },
-    // {
-    //     path: "team",
-    //     element: <Team/>,
-    // },
+    {
+        path: "chat",
+        element: <Chat/>,
+    },
     // {
     //     path: "projects",
     //     element: <Project/>,

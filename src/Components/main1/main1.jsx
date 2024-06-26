@@ -1,16 +1,21 @@
 import "./main1.scss"
 import {style} from "../../utils/style.js";
+import { useNavigate } from "react-router-dom";
+
 import {Flex, Radio} from 'antd';
 
 import DarkMode from "../darkMode/darkMode.jsx";
 import {useEffect, useState} from "react";
 
 function Main1() {
+    const navigate = useNavigate();
+
     const [filtrUser, setFiltrUser] = useState({
         chatTema: 'Oбшение',
         userGender: '',
         srcGender: '',
         userAge: '',
+        parametr: "",
         srcAge: {}
     })
     const [srcUserAge, setSrcUserAge] = useState([
@@ -40,6 +45,17 @@ function Main1() {
             chatTema: ['Oбшение', 'Флирт 18+',]
         }
     ])
+    const [parametrSrc] = useState([
+        {
+            age: "Ищу сюжет",
+            type: "",
+        },
+        {
+            age: "Предлагаю сюжет",
+            type: "",
+        }
+
+    ])
     const [disablet, setDisablet] = useState(false)
 
     function srcAge(e, age) {
@@ -61,6 +77,27 @@ function Main1() {
         console.log(userAllFilter)
     }
 
+    function chatTema18(user, gender) {
+        if (user === "user") {
+            setFiltrUser({
+                ...filtrUser,
+                userGender: gender,
+                srcGender: gender === "M" ? "Ж" : "M"
+            })
+        } else {
+            setFiltrUser({
+                ...filtrUser,
+                userGender: gender === "M" ? "Ж" : "M",
+                srcGender: gender
+            })
+        }
+
+    }
+
+    useEffect(() => {
+        srcAge()
+    }, [filtrUser.chatTema]);
+
     useEffect(() => {
         if (filtrUser.userGender === "Некто") {
             setDisablet(true);
@@ -69,8 +106,17 @@ function Main1() {
                 srcAge: {},
                 srcGender: 'Не важно'
             })
-        } else setDisablet(false);
-    }, [filtrUser.userGender]);
+        }
+        if(filtrUser.userGender === "Ролка"){
+            setDisablet(true);
+            setFiltrUser({
+                ...filtrUser,
+                srcAge: {},
+            })
+
+        }else setDisablet(false);
+
+    }, [filtrUser.userGender, filtrUser.chatTema]);
 
     return (
         <div className='main'>
@@ -97,7 +143,11 @@ function Main1() {
                                                      userAge: '',
                                                      srcAge: {}
                                                  })
-
+                                                     setSrcUserAge(prevValue =>
+                                                         prevValue.map(user => {
+                                                                 return {...user, type: ''}
+                                                             }
+                                                         ))
                                              }}>
                                     <Radio.Button className='bg-slate-800 rounded-lg text-white h-full pt-1.5 px-16'
                                                   value="Oбшение">Oбшение</Radio.Button>
@@ -114,14 +164,17 @@ function Main1() {
                                         <Radio.Group buttonStyle="solid" className='h-11'
                                                      value={filtrUser.userGender}
                                                      onChange={(e) => {
-                                                         setFiltrUser({
-                                                             ...filtrUser,
-                                                             userGender: e.target.value,
-                                                             userAge: e.target.value === "Некто" ? '' : filtrUser.userAge
-                                                         })
+                                                         filtrUser.chatTema === "Флирт 18+" ?
+                                                             chatTema18("user", e.target.value)
+                                                             :
+                                                             setFiltrUser({
+                                                                 ...filtrUser,
+                                                                 userGender: e.target.value,
+                                                                 userAge: e.target.value === "Некто" ? '' : filtrUser.userAge
+                                                             })
                                                      }}>
                                             {
-                                                filtrUser.chatTema !== "Флирт 18+" ?
+                                                filtrUser.chatTema !== "Флирт 18+" && filtrUser.chatTema!=="Ролка" ?
                                                     <Radio.Button className='bg-slate-800 text-white h-full w-24 pt-1.5'
                                                                   value="Некто">Некто</Radio.Button>
                                                     : ''
@@ -140,7 +193,13 @@ function Main1() {
                                         <Radio.Group buttonStyle="solid" className='h-11'
                                                      value={filtrUser.srcGender}
                                                      onChange={(e) => {
-                                                         setFiltrUser({...filtrUser, srcGender: e.target.value})
+                                                         filtrUser.chatTema === "Флирт 18+" ?
+                                                             chatTema18("src", e.target.value)
+                                                             :
+                                                             setFiltrUser({
+                                                                 ...filtrUser,
+                                                                 srcGender: e.target.value
+                                                             })
                                                      }}>
                                             {
                                                 filtrUser.chatTema !== "Флирт 18+" ?
@@ -162,7 +221,9 @@ function Main1() {
                             <div className="grid grid-cols-2 gap-4 mt-3">
                                 {
                                     disablet ? '' : <div className="flex flex-col gap-2">
-                                        <p>Ваш возраст:</p>
+                                        {
+                                            filtrUser.chatTema==="Ролка"? "": <p>Ваш возраст:</p>
+                                        }
 
                                         <Flex gap="middle">
                                             <Radio.Group
@@ -194,13 +255,14 @@ function Main1() {
                                 }
                                 {
                                     disablet ? '' : <div className="flex flex-col gap-2">
-                                        <p className='mb-1.5'>Возраст собеседника:</p>
+                                        {
+                                            filtrUser.chatTema==="Ролка"? "" :  <p className='mb-1.5'>Возраст собеседника:</p>
+                                        }
+
                                         {
                                             srcUserAge.filter(item => item?.chatTema?.includes(filtrUser.chatTema)).map((item, index) =>
-                                                // eslint-disable-next-line react/jsx-key
                                                 <button
                                                     key={index}
-                                                    disabled={disablet}
                                                     className={`border border-white bg-slate-800 rounded-lg mt-0.4 w-full text-white h-11  ${item.type}
                                                     hover:text-blue-600 text-sm`}
                                                     onClick={() => srcAge("ACTIVE", item.age)}
@@ -213,11 +275,45 @@ function Main1() {
                                 }
 
                             </div>
+                            {
+                                filtrUser.chatTema==="Ролка"? <div>
+                                    <p className='mb-1.5'>Параметры поиска:</p>
+                                    <Flex className='w-full'>
+                                        <Radio.Group
+                                            className='w-full'
+                                            buttonStyle="solid"
+                                            onChange={(e) => {
+                                                setFiltrUser({...filtrUser, parametr: e.target.value})
+                                            }}
+                                            style={{cursor: disablet ? 'not-allowed' : ''}}
+                                            disabled={disablet}
+                                            value={filtrUser.parametr}
+                                        >
+                                            {
+                                                parametrSrc.map((item, index) => {
+                                                        return (
+                                                            <Radio.Button key={index}
+                                                                          className={`bg-slate-800 mt-2 rounded-lg w-full text-white h-11 pt-1.5`}
+                                                                          value={item.age}
+                                                            >
+                                                                {item?.age}
+                                                            </Radio.Button>
+                                                        )
+                                                    }
+                                                )
+                                            }
+                                        </Radio.Group>
+                                    </Flex>
+
+                                </div> : ''
+                            }
                             <div className="flex justify-center">
                                 <button className='text-lg text-white Partner mt-10 mb-5 px-9 py-2.5 my-20'
-                                        onClick={() => chatNow()}
-
-                                >Начать чат
+                                        onClick={() => {
+                                            chatNow()
+                                            navigate("/chat");
+                                        }}>
+                                    Начать чат
                                 </button>
 
                             </div>
