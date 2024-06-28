@@ -4,4 +4,11 @@
   background-repeat: no-repeat;
   background-size: 100% 100vh;
 
+  .stiker{
+    svg{
+      width: 30px !important;
+      height: auto;
+    }
+  }
+
 }

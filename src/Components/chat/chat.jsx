@@ -1,12 +1,68 @@
 import "./chat.scss"
 import DarkMode from "@/Components/darkMode/darkMode.jsx";
 import {useNavigate} from "react-router-dom";
+import data from '@emoji-mart/data'
+import Picker from '@emoji-mart/react'
+import { SmileTwoTone } from '@ant-design/icons';
+import {  Popover  } from 'antd';
+import {useEffect, useState} from "react";
+
+import { Stomp } from '@stomp/stompjs';
+import SockJS from 'sockjs-client'
+
+
 function Chat() {
+
     const navigate = useNavigate();
+
+    const [messages, setMessages] = useState([])
+
+    const [message, setMessage] = useState('')
+    const [stompClient, setStompClient] = useState(null)
+
+    useEffect(() => {
+        const socket = new SockJS('http://192.168.18.122:8080/chat')
+        const client = Stomp.over(socket)
+
+        client.connect({},()=>{
+            client.subscribe('chat/match', (message)=>{
+                const receivedMessage = JSON.parse(message.body)
+                setMessages((prevMessages)=>[...prevMessages, receivedMessage]);
+            })
+        })
+
+        setStompClient(client)
+
+        return()=>{
+            client.disconnect()
+        }
+    }, []);
+    
+    function sendMessage() {
+        if (message.trim()){
+            const chatMessage={
+                nickName:1,
+                content:message
+            }
+            stompClient.send(`/app/chat`, {}, JSON.stringify(chatMessage))
+            sendMessage('')
+
+        }
+
+    }
+
+
+    const content = (
+            <Picker data={data} className="bg-white" theme="auto" previewPosition="none"
+                    onEmojiSelect={(emoji)=> {
+                        setMessage(prevState => prevState+emoji.native)
+                    }}/>
+    );
+
 
     return (
         <div>
-            <div className='bg-blue-50 dark:bg-slate-600 chat'>
+            <div className='bg-gray-400 dark:bg-slate-600 chat'>
                 <div className="bg-gray-100 h-screen flex flex-col max-w-2xl mx-auto drop-shadow-2xl">
                     <div className="bg-blue-500 p-4 text-white flex justify-between items-center">
                         <button id="login" className="hover:bg-blue-400 rounded-md p-1"
@@ -24,94 +80,31 @@ function Chat() {
                         <div className="flex flex-col space-y-2">
 
                             <div className="flex justify-end">
-                                <div className="bg-blue-200 text-black p-2 rounded-lg max-w-xs">
+                                <div className="bg-blue-200 text-black p-2 rounded-tl-2xl rounded-bl-2xl rounded-tr-2xl max-w-xs">
                                     Hey, hows your day going?
                                 </div>
                             </div>
 
                             <div className="flex">
-                                <div className="bg-gray-300 text-black p-2 rounded-lg max-w-xs">
+                                <div className="bg-gray-300 text-black p-2 rounded-tl-2xl rounded-br-2xl rounded-tr-2xl max-w-xs">
                                     Not too bad, just a bit busy. How about you?
-                                </div>
-                            </div>
-                            <div className="flex justify-end">
-                                <div className="bg-blue-200 text-black p-2 rounded-lg max-w-xs">
-                                    Im good, thanks. Anything exciting happening?
-                                </div>
-                            </div>
-
-                            <div className="flex">
-                                <div className="bg-gray-300 text-black p-2 rounded-lg max-w-xs">
-                                    Not really, just the usual. Work and errands.
-                                </div>
-                            </div>
-                            <div className="flex justify-end">
-                                <div className="bg-blue-200 text-black p-2 rounded-lg max-w-xs">
-                                    Sounds like a typical day. Got any plans for the weekend?
-                                </div>
-                            </div>
-
-                            <div className="flex">
-                                <div className="bg-gray-300 text-black p-2 rounded-lg max-w-xs">
-                                    Not yet, Im hoping to relax and maybe catch up on some reading. How about you?
-                                </div>
-                            </div>
-                            <div className="flex justify-end">
-                                <div className="bg-blue-200 text-black p-2 rounded-lg max-w-xs">
-                                    I might go hiking if the weathers nice. Otherwise, just taking it easy
-                                </div>
-                            </div>
-
-                            <div className="flex">
-                                <div className="bg-gray-300 text-black p-2 rounded-lg max-w-xs">
-                                    Hiking sounds fun. Hope the weather cooperates for you!
-                                </div>
-                            </div>
-                            <div className="flex justify-end">
-                                <div className="bg-blue-200 text-black p-2 rounded-lg max-w-xs">
-                                    Thanks! Fingers crossed. Enjoy your day!
-                                </div>
-                            </div>
-
-                            <div className="flex">
-                                <div className="bg-gray-300 text-black p-2 rounded-lg max-w-xs">
-                                    You too, take care!
-                                </div>
-                            </div>
-                            <div className="flex justify-end">
-                                <div className="bg-blue-200 text-black p-2 rounded-lg max-w-xs">
-                                    Sure
-                                </div>
-                            </div>
-                            <div className="flex justify-end">
-                                <div className="bg-blue-200 text-black p-2 rounded-lg max-w-xs">
-                                    Thanks
-                                </div>
-                            </div>
-
-                            <div className="flex justify-end">
-                                <div className="bg-blue-200 text-black p-2 rounded-lg max-w-xs">
-                                    😁
-                                </div>
-                            </div>
-                            <div className="flex">
-                                <div className="bg-gray-300 text-black p-2 rounded-lg max-w-xs">
-                                    Okay
-                                </div>
-                            </div>
-
-                            <div className="flex">
-                                <div className="bg-gray-300 text-black p-2 rounded-lg max-w-xs">
-                                    😄
                                 </div>
                             </div>
                         </div>
                     </div>
 
                     <div className="bg-white p-4 flex items-center">
-                        <input type="text" placeholder="Type your message..."
-                               className="flex-1 border rounded-full text-blue-900 px-4 py-2 focus:outline-none"/>
-                        <button
+                        <Popover theme="dark" placement="topLeft" content={content} trigger="click">
+                            <SmileTwoTone className="w-10 h-auto stiker"/>
+                        </Popover>
+
+                        <input type="text" placeholder="Type your message..." className="flex-1 border rounded-full text-blue-900 px-4 py-2 focus:outline-none"
+                               onChange={(e)=>{
+                                   setMessage(e.target.value)
+                               }}
+                               value={message}
+                        />
+                        <button onClick={()=>sendMessage()}
                             className="bg-blue-500 text-white rounded-full p-2 ml-2 hover:bg-blue-600 focus:outline-none">
                             <svg width="20px" height="20px" viewBox="0 0 24 24" fill="none"
                                  xmlns="http://www.w3.org/2000/svg" stroke="#ffffff">
