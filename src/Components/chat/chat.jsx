@@ -9,13 +9,11 @@ import {useEffect, useState} from "react";
 
 import {Stomp} from '@stomp/stompjs';
 import SockJS from 'sockjs-client'
-import {domen} from "@/domen.jsx";
 import Loading from "@/Components/loading/loading.jsx";
 
 
 function Chat() {
     const [fulInfo] = useState(JSON.parse(localStorage.getItem("user")));
-
 
     const navigate = useNavigate();
 
@@ -26,27 +24,31 @@ function Chat() {
     const [stompClient, setStompClient] = useState(null)
 
     useEffect(() => {
-        const socket = new SockJS(`${domen}/chat`)
-        const client = Stomp.over(socket)
-
-        client.connect({}, () => {
-            client.subscribe(`/user/messages/${fulInfo?.id}`, (message)=>{
-                const receivedMessage = JSON.parse(message.body)
-                console.log(receivedMessage)
-                // setMessages((prevMessages)=>[...prevMessages, receivedMessage]);
-            });
-
+        console.log('adasd')
+        const socket = new SockJS('http://localhost:8080/chat', null, {
+            transports: ['websocket'],
+            withCredentials: true
         });
+        const client = Stomp.over(socket);
+        client.onStompError((frame) => {
+            console.log(frame)
+        })
+        client.withCredentials = true;
+        client.reconnect_delay = 2;
 
+        client.connect(() => {
+                client.subscribe('/topic/messages', (msg) => {
+                    console.log(msg)
+                    setMessages((prevMessages) => [...prevMessages, msg.body]);
+                });
+                setStompClient(client);
+            },
+            (error) => {
+                console.log('error', error);
+            }
+        );
 
-        setStompClient(client)
-
-        return () => {
-            client.disconnect()
-        }
-    }, []);
-
-
+    }, [fulInfo]);
 
     function sendMessage() {
         if (message.trim()) {
@@ -60,7 +62,6 @@ function Chat() {
         }
 
     }
-
 
     const content = (
         <Picker data={data} className="bg-white" theme="auto" previewPosition="none"
