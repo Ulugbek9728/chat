@@ -1,4 +1,4 @@
 // const domen = 'https://api-r-office.tdtu.uz';
-const domen = 'http://localhost:8080';
+const domen = 'http://192.168.18.122:8080';
 
 export {domen}
