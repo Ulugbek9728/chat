@@ -21,36 +21,31 @@ function Main1() {
     const [srcUserAge, setSrcUserAge] = useState([
         {
             age: "до 17 лет",
+            value:"TO_17",
             type: "",
         },
         {
             age: "от 18 до 21 года",
+            value:"FROM_18_TO_22",
             type: "",
         },
         {
             age: "от 22 до 25 года",
+            value:"FROM_22_TO_25",
             type: "",
         },
         {
             age: "от 26 до 35 года",
+            value:"FROM_26_TO_35",
             type: "",
         },
         {
             age: "старше 36 лет",
+            value:"FROM_36",
             type: "",
         }
     ])
-    const [parametrSrc] = useState([
-        {
-            age: "Ищу сюжет",
-            type: "",
-        },
-        {
-            age: "Предлагаю сюжет",
-            type: "",
-        }
 
-    ])
     const [disablet, setDisablet] = useState(false)
 
     function srcAge(e, age) {
@@ -63,7 +58,7 @@ function Main1() {
 
     function chatNow() {
         // navigate("/chat");
-        const userAgeSrc = srcUserAge.filter((item) => item.type === "ACTIVE").map(item => item.age)
+        const userAgeSrc = srcUserAge.filter((item) => item.type === "ACTIVE").map(item => item.value)
         const userAllFilter = {
             ...filtrUser,
             partnerAges: filtrUser.gender === 'Некто' ? {} : ['TO_17','FROM_36']
@@ -120,11 +115,11 @@ function Main1() {
                                                      }}>
 
                                             <Radio.Button className='bg-slate-800 text-white h-full w-24 pt-1.5'
-                                                          value="Некто">Некто</Radio.Button>
+                                                          value="DOES_NOT_HAVE">Некто</Radio.Button>
                                             <Radio.Button className='bg-slate-800 text-white h-full w-20 pt-1.5'
-                                                          value="M">M</Radio.Button>
+                                                          value="MALE">M</Radio.Button>
                                             <Radio.Button className='bg-slate-800 text-white h-full w-20 pt-1.5'
-                                                          value="Ж">Ж</Radio.Button>
+                                                          value="FEMALE ">Ж</Radio.Button>
                                         </Radio.Group>
                                     </Flex>
                                 </div>
@@ -139,16 +134,14 @@ function Main1() {
                                                              partnerGender: e.target.value
                                                          })
                                                      }}>
-
-
                                             <Radio.Button className='bg-slate-800 text-white h-full w-24 pt-1.5'
-                                                          value="Не важно">Не важно</Radio.Button>
+                                                          value="DOES_NOT_HAVE">Не важно</Radio.Button>
                                             <Radio.Button disabled={disablet}
                                                           className={`bg-slate-800 text-white h-full w-20 pt-1.5`}
-                                                          value="M">M</Radio.Button>
+                                                          value="MALE">M</Radio.Button>
                                             <Radio.Button disabled={disablet}
                                                           className='bg-slate-800 text-white h-full w-20 pt-1.5'
-                                                          value="Ж">Ж</Radio.Button>
+                                                          value="FEMALE ">Ж</Radio.Button>
                                         </Radio.Group>
                                     </Flex>
                                 </div>
@@ -175,7 +168,7 @@ function Main1() {
                                                             return (
                                                                 <Radio.Button key={index}
                                                                               className={`bg-slate-800 mt-2 rounded-lg w-full text-white h-11 pt-1.5`}
-                                                                              value={item.age}
+                                                                              value={item.value}
                                                                 >
                                                                     {item?.age}
                                                                 </Radio.Button>
@@ -208,38 +201,6 @@ function Main1() {
                                 }
 
                             </div>
-                            {
-                                filtrUser.topic === "Ролка" ? <div>
-                                    <p className='mb-1.5'>Параметры поиска:</p>
-                                    <Flex className='w-full'>
-                                        <Radio.Group
-                                            className='w-full'
-                                            buttonStyle="solid"
-                                            onChange={(e) => {
-                                                setFiltrUser({...filtrUser, parametr: e.target.value})
-                                            }}
-                                            style={{cursor: disablet ? 'not-allowed' : ''}}
-                                            disabled={disablet}
-                                            value={filtrUser.parametr}
-                                        >
-                                            {
-                                                parametrSrc.map((item, index) => {
-                                                        return (
-                                                            <Radio.Button key={index}
-                                                                          className={`bg-slate-800 mt-2 rounded-lg w-full text-white h-11 pt-1.5`}
-                                                                          value={item.age}
-                                                            >
-                                                                {item?.age}
-                                                            </Radio.Button>
-                                                        )
-                                                    }
-                                                )
-                                            }
-                                        </Radio.Group>
-                                    </Flex>
-
-                                </div> : ''
-                            }
                             <div className="flex justify-center">
                                 <button className='text-lg text-white Partner mt-10 mb-5 px-9 py-2.5 my-20'
                                         onClick={() => {

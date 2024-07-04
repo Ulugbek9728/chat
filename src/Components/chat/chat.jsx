@@ -11,6 +11,7 @@ import {Stomp} from '@stomp/stompjs';
 import SockJS from 'sockjs-client'
 import Loading from "@/Components/loading/loading.jsx";
 import {domen} from "../../domen.jsx"
+import Typeng from "@/Components/typengChat/typeng.jsx";
 
 
 function Chat() {
@@ -93,6 +94,7 @@ function Chat() {
         } catch (e) {
             console.log(e)
         }
+
     }
 
     function handleChatMessages(msg) {
@@ -109,7 +111,7 @@ function Chat() {
     return (
         <div>
             <div className='bg-gray-400 dark:bg-slate-600 chat'>
-                <div className="bg-gray-100 h-screen flex flex-col max-w-2xl mx-auto drop-shadow-2xl">
+                <div className="bg-gray-100 h-screen flex flex-col max-w-2xl mx-auto drop-shadow-2xl overflow-y-hidden">
                     <div className="bg-blue-500 p-4 text-white flex justify-between items-center">
                         <DarkMode/>
                         <span>Chat anonim</span>
@@ -129,8 +131,9 @@ function Chat() {
                     {
                         loading ? <Loading/> :
                             <div>
-                                <div className="flex-1 overflow-y-auto p-4">
+                                <div className="flex-1 overflow-y-auto p-4 pb-32" style={{height:"65%"}}>
                                     <div className="flex flex-col space-y-2">
+                                        <Typeng userName={"Jonibek"}/>
 
                                         <div className="flex justify-end">
                                             <div
@@ -138,15 +141,103 @@ function Chat() {
                                                 Hey, hows your day going?
                                             </div>
                                         </div>
-
                                         <div className="flex">
                                             <div
                                                 className="bg-gray-300 text-black p-2 rounded-tl-2xl rounded-br-2xl rounded-tr-2xl max-w-xs">
                                                 Not too bad, just a bit busy. How about you?
                                             </div>
                                         </div>
+                                        <div className="flex justify-end">
+                                            <div
+                                                className="bg-blue-200 text-black p-2 rounded-tl-2xl rounded-bl-2xl rounded-tr-2xl max-w-xs">
+                                                Hey, hows your day going?
+                                            </div>
+                                        </div>
+                                        <div className="flex">
+                                            <div
+                                                className="bg-gray-300 text-black p-2 rounded-tl-2xl rounded-br-2xl rounded-tr-2xl max-w-xs">
+                                                Not too bad, just a bit busy. How about you?
+                                            </div>
+                                        </div>
+                                        <div className="flex justify-end">
+                                            <div
+                                                className="bg-blue-200 text-black p-2 rounded-tl-2xl rounded-bl-2xl rounded-tr-2xl max-w-xs">
+                                                Hey, hows your day going?
+                                            </div>
+                                        </div>
+                                        <div className="flex">
+                                            <div
+                                                className="bg-gray-300 text-black p-2 rounded-tl-2xl rounded-br-2xl rounded-tr-2xl max-w-xs">
+                                                Not too bad, just a bit busy. How about you?
+                                            </div>
+                                        </div>
+                                        <div className="flex justify-end">
+                                            <div
+                                                className="bg-blue-200 text-black p-2 rounded-tl-2xl rounded-bl-2xl rounded-tr-2xl max-w-xs">
+                                                Hey, hows your day going?
+                                            </div>
+                                        </div>
+                                        <div className="flex">
+                                            <div
+                                                className="bg-gray-300 text-black p-2 rounded-tl-2xl rounded-br-2xl rounded-tr-2xl max-w-xs">
+                                                Not too bad, just a bit busy. How about you?
+                                            </div>
+                                        </div>
+                                        <div className="flex justify-end">
+                                            <div
+                                                className="bg-blue-200 text-black p-2 rounded-tl-2xl rounded-bl-2xl rounded-tr-2xl max-w-xs">
+                                                Hey, hows your day going?
+                                            </div>
+                                        </div>
+                                        <div className="flex">
+                                            <div
+                                                className="bg-gray-300 text-black p-2 rounded-tl-2xl rounded-br-2xl rounded-tr-2xl max-w-xs">
+                                                Not too bad, just a bit busy. How about you?
+                                            </div>
+                                        </div>
+                                        <div className="flex justify-end">
+                                            <div
+                                                className="bg-blue-200 text-black p-2 rounded-tl-2xl rounded-bl-2xl rounded-tr-2xl max-w-xs">
+                                                Hey, hows your day going?
+                                            </div>
+                                        </div>
+                                        <div className="flex">
+                                            <div
+                                                className="bg-gray-300 text-black p-2 rounded-tl-2xl rounded-br-2xl rounded-tr-2xl max-w-xs">
+                                                Not too bad, just a bit busy. How about you?
+                                            </div>
+                                        </div>
+                                        <div className="flex justify-end">
+                                            <div
+                                                className="bg-blue-200 text-black p-2 rounded-tl-2xl rounded-bl-2xl rounded-tr-2xl max-w-xs">
+                                                Hey, hows your day going?
+                                            </div>
+                                        </div>
+                                        <div className="flex">
+                                            <div
+                                                className="bg-gray-300 text-black p-2 rounded-tl-2xl rounded-br-2xl rounded-tr-2xl max-w-xs">
+                                                Not too bad, just a bit busy. How about you?
+                                            </div>
+                                        </div>
+                                        <div className="flex justify-end">
+                                            <div
+                                                className="bg-blue-200 text-black p-2 rounded-tl-2xl rounded-bl-2xl rounded-tr-2xl max-w-xs">
+                                                Hey, hows your day going?
+                                            </div>
+                                        </div>
+                                        <div className="flex">
+                                            <div
+                                                className="bg-gray-300 text-black p-2 rounded-tl-2xl rounded-br-2xl rounded-tr-2xl max-w-xs">
+                                                Not too bad, just a bit busy. How about you?
+                                            </div>
+                                        </div>
+                                        <div className="flex justify-end">
+                                            <div
+                                                className="bg-blue-200 text-black p-2 rounded-tl-2xl rounded-bl-2xl rounded-tr-2xl max-w-xs">
+                                                Hey, hows your day going?
+                                            </div>
+                                        </div>
                                     </div>
-
                                 </div>
 
                                 <div className="flex gap-5 absolute bottom-28 justify-center w-full">
