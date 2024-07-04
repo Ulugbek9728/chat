@@ -24,7 +24,8 @@ function Chat() {
     const [loading, setLoading] = useState(false)
     const [tugatishBtn, setTugatishBtn] = useState(false)
     const [stompClient, setStompClient] = useState(null)
-
+    const [findChatStompSubscription, setFindChatStompSubscription] = useState(null);
+    const [chatMessageStompSubscription, setChatMessageStompSubscription] = useState(null);
     useEffect(() => {
         if (stompClient == null) {
             const socket = new SockJS(`${domen}/chat`, null, {
@@ -41,7 +42,7 @@ function Chat() {
             });
             client
                 .connect({'Authorization': `Bearer ${fulInfo.token}`}, () => {
-                        client.subscribe(`/match-chat/${fulInfo?.id}`, handleSearchChat);
+                        setFindChatStompSubscription(client.subscribe(`/match-chat/${fulInfo?.id}`, handleSearchChat));
                         setStompClient(client);
                     },
                     (error) => {
@@ -65,8 +66,7 @@ function Chat() {
                 nickName: 1,
                 content: message
             }
-            stompClient.send(`/app/chat`, {}, {})
-            // sendMessage('')
+            stompClient.send(`/app/message/send`, {}, {});
         }
     }
 
@@ -76,12 +76,27 @@ function Chat() {
             const message = JSON.parse(msg?.body);
             switch (message?.chat?.status) {
                 case 'WAITING_TO_START': {
-                    // setLoading(true);
+                    setLoading(true);
+                    break;
+                }
+                case 'ACTIVE': {
+                    findChatStompSubscription && findChatStompSubscription.unsubscribe();
+
+                    message?.chat?.id && setChatMessageStompSubscription(stompClient.subscribe(
+                        `/message/chat/${message?.chat?.id}`,
+                        handleChatMessages,
+                        {Authorization: `Bearer ${fulInfo?.token}`},
+                    ));
+                    break
                 }
             }
         } catch (e) {
             console.log(e)
         }
+    }
+
+    function handleChatMessages(msg) {
+
     }
 
     const content = (

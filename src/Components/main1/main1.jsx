@@ -11,12 +11,12 @@ import {useEffect, useState} from "react";
 function Main1() {
     const navigate = useNavigate();
     const [filtrUser, setFiltrUser] = useState({
-        topic: 'Oбшение',
-        gender: '',
-        partnerGender: '',
-        age: '',
+        topic: 'ALL',
+        gender: 'MALE',
+        partnerGender: 'FEMALE',
+        age: 'TO_17',
         parametr: "",
-        partnerAges: {}
+        partnerAges: ['TO_17','FROM_36']
     })
     const [srcUserAge, setSrcUserAge] = useState([
         {
@@ -66,7 +66,7 @@ function Main1() {
         const userAgeSrc = srcUserAge.filter((item) => item.type === "ACTIVE").map(item => item.age)
         const userAllFilter = {
             ...filtrUser,
-            partnerAges: filtrUser.gender === 'Некто' ? {} : userAgeSrc
+            partnerAges: filtrUser.gender === 'Некто' ? {} : ['TO_17','FROM_36']
         }
         axios.post(`${domen}/api/v1/auth/register`, userAllFilter).then((res) => {
             localStorage.setItem("user", JSON.stringify(res.data.user));
