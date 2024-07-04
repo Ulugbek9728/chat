@@ -27,36 +27,38 @@ function Chat() {
     const [stompClient, setStompClient] = useState(null)
 
     useEffect(() => {
-        const socket = new SockJS(`${domen}/chat`, null, {
-            transports: ['websocket'],
-            withCredentials: true
-        });
-        const client = Stomp.over(socket);
+        if (stompClient == null) {
+            const socket = new SockJS(`${domen}/chat`, null, {
+                transports: ['websocket'],
+                withCredentials: true
+            });
+            const client = Stomp.over(socket);
 
-        client.onStompError((frame) => {
-            console.log(frame)
-        })
-        client.withCredentials = true;
-        client.reconnect_delay = 2;
+            client.heartbeat.incoming = 4000;
+            client.heartbeat.outgoing = 4000;
+            client.reconnect_delay = 5000;
+            client.debug((m) => {
+                console.log(m)
+            });
+            client
+                .connect({'Authorization': `Bearer ${fulInfo.token}`}, () => {
+                        client.subscribe(`/match-chat/${fulInfo?.id}`, handleSearchChat);
+                        setStompClient(client);
+                    },
+                    (error) => {
+                        console.log('error', error);
+                    }
+                );
+        }
+    }, [fulInfo, stompClient]);
 
-        client.connect(() => {
-                client.subscribe('/topic/messages', (msg) => {
-                    const receivedMessage = JSON.parse(msg.body)
-                    console.log(msg)
-                    setMessages((prevMessages) => [...prevMessages, receivedMessage]);
-                });
-                setStompClient(client);
+    useEffect(() => {
+        stompClient && sendSearchChat();
+    }, [stompClient]);
 
-                return () => {
-                    client.disconnect()
-                }
-            },
-            (error) => {
-                console.log('error', error);
-            }
-        );
-
-    }, [fulInfo]);
+    function sendSearchChat() {
+        stompClient.send('/app/chat/match', {Authorization: `Bearer ${fulInfo?.token}`}, '');
+    }
 
     function sendMessage() {
         if (message.trim()) {
@@ -64,9 +66,22 @@ function Chat() {
                 nickName: 1,
                 content: message
             }
-            stompClient.send(`/app/chat`, {}, JSON.stringify(chatMessage))
-            sendMessage('')
+            stompClient.send(`/app/chat`, {}, {})
+            // sendMessage('')
+        }
+    }
 
+    function handleSearchChat(msg) {
+        console.log(msg?.body)
+        try {
+            const message = JSON.parse(msg?.body);
+            switch (message?.chat?.status) {
+                case 'WAITING_TO_START': {
+                    // setLoading(true);
+                }
+            }
+        } catch (e) {
+            console.log(e)
         }
 
     }
@@ -88,7 +103,8 @@ function Chat() {
                         {
                             tugatishBtn ? <button id="login" className="bg-red-500 rounded-md px-2 py-1"
                                                   onClick={() => {
-                                                      navigate("/");
+                                                      // navigate("/");
+                                                      sendSearchChat();
                                                   }}
                             >
                                 Завершить чат
@@ -228,9 +244,6 @@ function Chat() {
                                            className="flex-1 border rounded-full text-blue-900 px-4 py-2 focus:outline-none"
                                            onChange={(e) => {
                                                setMessage(e.target.value)
-                                           }}
-                                           onFocus={(e)=>{
-                                               console.log(e)
                                            }}
                                            value={message}
                                     />
