@@ -21,6 +21,7 @@ function Chat() {
     const navigate = useNavigate();
 
     const [messages, setMessages] = useState([])
+    const [isPartnerTyping, setIsPartnerTyping] = useState(false)
 
     const [message, setMessage] = useState('')
     const [loading, setLoading] = useState(false)
@@ -41,30 +42,28 @@ function Chat() {
 
                 client.heartbeat.incoming = 4000;
                 client.heartbeat.outgoing = 4000;
+                client.reconnect_delay = 5000;
 
-                client
-                    .connect({'Authorization': `Bearer ${fulInfo?.token}`}, () => {
-                            setStompClient(client);
-                            if (currentChat) {
-                                setChatMessageStompSubscription(client.subscribe(
-                                    `/message/chat/${currentChat?.chatId}`,
-                                    handleChatMessages,
-                                    {Authorization: `Bearer ${fulInfo?.token}`},
-                                ));
-                                setLoading(false);
-                                setTugatishBtn(true);
-                            } else {
-                                setFindChatStompSubscription(client.subscribe(`/match-chat/${fulInfo?.id}`, handleSearchChat));
-                            }
-
-                        },
-                        (error) => {
-                            console.log('error', error);
+                client.connect({'Authorization': `Bearer ${fulInfo.token}`}, () => {
+                        if (currentChat) {
+                            setChatMessageStompSubscription(client.subscribe(
+                                `/message/chat/${currentChat?.chatId}`,
+                                handleChatMessages,
+                                {Authorization: `Bearer ${fulInfo?.token}`},
+                            ));
+                            setLoading(false);
+                            setTugatishBtn(true);
+                        } else {
+                            setFindChatStompSubscription(client.subscribe(`/match-chat/${fulInfo?.id}`, handleSearchChat));
                         }
-                    );
+                        setStompClient(client);
+                    },
+                    (error) => {
+                        console.log('error', error);
+                    }
+                );
             }
         }
-
     }, []);
 
     useEffect(() => {
@@ -86,7 +85,6 @@ function Chat() {
                 stompClient.send(`/app/message/send`, {Authorization: `Bearer ${fulInfo?.token}`}, JSON.stringify(chatMessage));
                 setMessage('');
             }
-
         }
     }
 
@@ -102,8 +100,8 @@ function Chat() {
                 case 'ACTIVE': {
                     findChatStompSubscription && findChatStompSubscription.unsubscribe();
                     localStorage.setItem('currentChat', JSON.stringify(message?.chat));
-                    message?.chat?.id && setChatMessageStompSubscription(stompClient.subscribe(
-                        `/message/chat/${message?.chat?.id}`,
+                    message?.chat?.chatId && setChatMessageStompSubscription(stompClient.subscribe(
+                        `/message/chat/${message?.chat?.chatId}`,
                         handleChatMessages,
                         {Authorization: `Bearer ${fulInfo?.token}`},
                     ));
@@ -115,25 +113,51 @@ function Chat() {
                     chatMessageStompSubscription && chatMessageStompSubscription.unsubscribe();
                     break;
                 }
-
             }
         } catch (e) {
             console.log(e)
         }
-
     }
 
     function handleChatMessages(msg) {
-        setMessages((prevMessages) => [...prevMessages, JSON.parse(msg?.body)]);
+        const receivedMessage = JSON.parse(msg?.body);
+        console.log(receivedMessage)
+        switch (receivedMessage?.action) {
+            case 'new.message': {
+                setMessages((prevMessages) => [...prevMessages, receivedMessage]);
+                break;
+            }
+            case 'chat.action': {
+                if (receivedMessage?.typedUserId !== fulInfo?.id) {
+                    setIsPartnerTyping(true);
+                    setTimeout(() => {
+                        setIsPartnerTyping(false);
+                    }, 5000)
+                }
+                break;
+            }
+        }
     }
 
     const content = (
-        <Picker data={data} className="bg-white" theme="auto" previewPosition="none"
+        <Picker data={data}
+                className="bg-white"
+                theme="auto"
+                previewPosition="none"
                 onEmojiSelect={(emoji) => {
                     setMessage(prevState => prevState + emoji.native)
-                }}/>
+                }}
+        />
     );
 
+
+    function sendChatAction(action) {
+        stompClient && stompClient.send(
+            '/app/chat-action/send',
+            {Authorization: `Bearer ${fulInfo?.token}`},
+            JSON.stringify({chatId: currentChat?.chatId, action: action})
+        );
+    }
 
     return (
         <div>
@@ -146,14 +170,11 @@ function Chat() {
                             tugatishBtn ? <button id="login" className="bg-red-500 rounded-md px-2 py-1"
                                                   onClick={() => {
                                                       // navigate("/");
-                                                      sendSearchChat();
                                                   }}
                             >
                                 Завершить чат
                             </button> : <div/>
                         }
-
-
                     </div>
                     {
                         loading ? <Loading onCancel={() => {
@@ -164,7 +185,7 @@ function Chat() {
                             <div>
                                 <div className="flex-1 overflow-y-auto p-4 pb-32" style={{height: "84vh"}}>
                                     <div className="flex flex-col space-y-2 h-full ">
-                                        <Typeng userName={"Yozmoqda"}/>
+                                        {isPartnerTyping && <Typeng userName={"Yozmoqda"}/>}
                                         {messages?.map(item => {
                                             const oneMessage = item?.message;
                                             return (
@@ -193,15 +214,19 @@ function Chat() {
                                     </div>
                                 </div>
 
-                                {!tugatishBtn && <div className="flex gap-5 absolute bottom-28 justify-center w-full">
-                                    <button className='bg-blue-500 text-white px-5 py-2.5 min-w-60 rounded-2xl'>Изменить
-                                        параметры
-                                    </button>
-                                    <button
-                                        className="bg-emerald-600 text-white px-5 py-2.5  min-w-60 rounded-2xl">Начать
-                                        новый чат
-                                    </button>
-                                </div>}
+                                {
+                                    !tugatishBtn &&
+                                    <div className="flex gap-5 absolute bottom-28 justify-center w-full">
+                                        <button
+                                            className='bg-blue-500 text-white px-5 py-2.5 min-w-60 rounded-2xl'>Изменить
+                                            параметры
+                                        </button>
+                                        <button
+                                            className="bg-emerald-600 text-white px-5 py-2.5  min-w-60 rounded-2xl">Начать
+                                            новый чат
+                                        </button>
+                                    </div>
+                                }
 
                                 <div className="bg-white p-4 flex items-center absolute bottom-0 w-full">
                                     <Popover theme="dark" placement="topLeft" content={content} trigger="click">
@@ -214,9 +239,11 @@ function Chat() {
                                           onFinish={sendMessage}>
                                         <Form.Item>
                                             <input type="text" placeholder="Type your message..."
+
                                                    className="flex-1 border rounded-full text-blue-900 px-4 py-2 focus:outline-none"
                                                    onChange={(e) => {
-                                                       setMessage(e.target.value)
+                                                       setMessage(e.target.value);
+                                                       sendChatAction('TYPING');
                                                    }}
                                                    value={message}
                                             />
@@ -251,8 +278,6 @@ function Chat() {
                 </div>
             </div>
         </div>
-
-
     );
 }
 
