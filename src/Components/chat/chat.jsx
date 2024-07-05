@@ -46,7 +46,6 @@ function Chat() {
                 client
                     .connect({'Authorization': `Bearer ${fulInfo.token}`}, () => {
                             setStompClient(client);
-                            console.log(currentChat)
                             if (currentChat) {
                                 setChatMessageStompSubscription(client.subscribe(
                                     `/message/chat/${currentChat?.chatId}`,
@@ -54,6 +53,7 @@ function Chat() {
                                     {Authorization: `Bearer ${fulInfo?.token}`},
                                 ));
                                 setLoading(false);
+                                setTugatishBtn(true);
                             } else {
                                 setFindChatStompSubscription(client.subscribe(`/match-chat/${fulInfo?.id}`, handleSearchChat));
                             }
@@ -107,6 +107,7 @@ function Chat() {
                         handleChatMessages,
                         {Authorization: `Bearer ${fulInfo?.token}`},
                     ));
+                    setTugatishBtn(true);
                     break;
                 }
                 case 'CLOSED': {
@@ -158,11 +159,10 @@ function Chat() {
                             <div>
                                 <div className="flex-1 overflow-y-auto p-4 pb-32" style={{height: "65%"}}>
                                     <div className="flex flex-col space-y-2">
-                                        <Typeng userName={"Jonibek"}/>
+                                        <Typeng userName={"Yozilmoqda"}/>
                                         {
                                             messages?.map(item => {
                                                 const oneMessage = item?.message;
-                                                console.log(oneMessage)
                                                 return (
                                                     <>
                                                         {
@@ -190,7 +190,7 @@ function Chat() {
                                     </div>
                                 </div>
 
-                                <div className="flex gap-5 absolute bottom-28 justify-center w-full">
+                                {!tugatishBtn && <div className="flex gap-5 absolute bottom-28 justify-center w-full">
                                     <button className='bg-blue-500 text-white px-5 py-2.5 min-w-60 rounded-2xl'>Изменить
                                         параметры
                                     </button>
@@ -198,7 +198,7 @@ function Chat() {
                                         className="bg-emerald-600 text-white px-5 py-2.5  min-w-60 rounded-2xl">Начать
                                         новый чат
                                     </button>
-                                </div>
+                                </div>}
 
                                 <div className="bg-white p-4 flex items-center absolute bottom-0 w-full">
                                     <Popover theme="dark" placement="topLeft" content={content} trigger="click">
