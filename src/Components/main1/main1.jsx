@@ -63,8 +63,10 @@ function Main1() {
             ...filtrUser,
             partnerAges: filtrUser.gender === 'Некто' ? {} : ['TO_17','FROM_36']
         }
+
         axios.post(`${domen}/api/v1/auth/register`, userAllFilter).then((res) => {
             localStorage.setItem("user", JSON.stringify(res.data.user));
+            localStorage.setItem("ChatFilter", JSON.stringify(userAllFilter))
             navigate("/chat");
         }).catch((error) => {
             console.log(error)
