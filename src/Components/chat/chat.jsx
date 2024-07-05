@@ -27,22 +27,23 @@ function Chat() {
     const [stompClient, setStompClient] = useState(null)
     const [findChatStompSubscription, setFindChatStompSubscription] = useState(null);
     const [chatMessageStompSubscription, setChatMessageStompSubscription] = useState(null);
-    useEffect(() => {
-        if (stompClient == null) {
-            const socket = new SockJS(`${domen}/chat`, null, {
-                transports: ['websocket'],
-                withCredentials: true
-            });
-            const client = Stomp.over(socket);
 
-            client.heartbeat.incoming = 4000;
-            client.heartbeat.outgoing = 4000;
-            client.reconnect_delay = 5000;
-            client.debug((m) => {
-                console.log(m)
-            });
-            client
-                .connect({'Authorization': `Bearer ${fulInfo.token}`}, () => {
+    useEffect(() => {
+        return ()=>{
+            if (stompClient == null) {
+                const socket = new SockJS(`${domen}/chat`, null, {
+                    transports: ['websocket'],
+                    withCredentials: true
+                });
+                const client = Stomp.over(socket);
+
+                client.heartbeat.incoming = 4000;
+                client.heartbeat.outgoing = 4000;
+                client.reconnect_delay = 5000;
+                client.debug((m) => {
+                    console.log(m)
+                });
+                client.connect({'Authorization': `Bearer ${fulInfo.token}`}, () => {
                         setFindChatStompSubscription(client.subscribe(`/match-chat/${fulInfo?.id}`, handleSearchChat));
                         setStompClient(client);
                     },
@@ -50,8 +51,11 @@ function Chat() {
                         console.log('error', error);
                     }
                 );
+            }
         }
-    }, [fulInfo, stompClient]);
+
+    }, []);
+
 
     useEffect(() => {
         stompClient && sendSearchChat();
