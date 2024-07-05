@@ -13,7 +13,7 @@ function Main1() {
     const [filtrUser, setFiltrUser] = useState({
         topic: 'ALL',
         gender: 'MALE',
-        partnerGender: 'FEMALE',
+        partnerGender: 'MALE',
         age: 'TO_17',
         parametr: "",
         partnerAges: ['TO_17','FROM_36']

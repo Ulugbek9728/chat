@@ -27,34 +27,48 @@ function Chat() {
     const [stompClient, setStompClient] = useState(null)
     const [findChatStompSubscription, setFindChatStompSubscription] = useState(null);
     const [chatMessageStompSubscription, setChatMessageStompSubscription] = useState(null);
+    const [currentChat] = useState(JSON.parse(localStorage.getItem('currentChat')));
     useEffect(() => {
-        if (stompClient == null) {
-            const socket = new SockJS(`${domen}/chat`, null, {
-                transports: ['websocket'],
-                withCredentials: true
-            });
-            const client = Stomp.over(socket);
+        console.log('1')
+        return () => {
+            if (stompClient == null) {
+                console.log('2')
+                const socket = new SockJS(`${domen}/chat`, null, {
+                    transports: ['websocket'],
+                    withCredentials: true
+                });
+                const client = Stomp.over(socket);
 
-            client.heartbeat.incoming = 4000;
-            client.heartbeat.outgoing = 4000;
-            client.reconnect_delay = 5000;
-            client.debug((m) => {
-                console.log(m)
-            });
-            client
-                .connect({'Authorization': `Bearer ${fulInfo.token}`}, () => {
-                        setFindChatStompSubscription(client.subscribe(`/match-chat/${fulInfo?.id}`, handleSearchChat));
-                        setStompClient(client);
-                    },
-                    (error) => {
-                        console.log('error', error);
-                    }
-                );
+                client.heartbeat.incoming = 4000;
+                client.heartbeat.outgoing = 4000;
+                client.reconnect_delay = 5000;
+
+                client
+                    .connect({'Authorization': `Bearer ${fulInfo.token}`}, () => {
+                            setStompClient(client);
+                            console.log(currentChat)
+                            if (currentChat) {
+                                setChatMessageStompSubscription(client.subscribe(
+                                    `/message/chat/${currentChat?.chatId}`,
+                                    handleChatMessages,
+                                    {Authorization: `Bearer ${fulInfo?.token}`},
+                                ));
+                                setLoading(false);
+                            } else {
+                                setFindChatStompSubscription(client.subscribe(`/match-chat/${fulInfo?.id}`, handleSearchChat));
+                            }
+
+                        },
+                        (error) => {
+                            console.log('error', error);
+                        }
+                    );
+            }
         }
-    }, [fulInfo, stompClient]);
+    }, []);
 
     useEffect(() => {
-        stompClient && sendSearchChat();
+        stompClient && !currentChat && sendSearchChat();
     }, [stompClient]);
 
     function sendSearchChat() {
@@ -63,11 +77,16 @@ function Chat() {
 
     function sendMessage() {
         if (message.trim()) {
-            const chatMessage = {
-                nickName: 1,
-                content: message
+            if (currentChat) {
+                const chatMessage = {
+                    chatId: currentChat?.chatId,
+                    content: message
+                }
+                console.log(chatMessage)
+                stompClient.send(`/app/message/send`, {Authorization: `Bearer ${fulInfo?.token}`}, JSON.stringify(chatMessage));
+                setMessage('');
             }
-            stompClient.send(`/app/message/send`, {}, {});
+
         }
     }
 
@@ -82,14 +101,20 @@ function Chat() {
                 }
                 case 'ACTIVE': {
                     findChatStompSubscription && findChatStompSubscription.unsubscribe();
-
+                    localStorage.setItem('currentChat', JSON.stringify(message?.chat));
                     message?.chat?.id && setChatMessageStompSubscription(stompClient.subscribe(
                         `/message/chat/${message?.chat?.id}`,
                         handleChatMessages,
                         {Authorization: `Bearer ${fulInfo?.token}`},
                     ));
-                    break
+                    break;
                 }
+                case 'CLOSED': {
+                    findChatStompSubscription && findChatStompSubscription.unsubscribe();
+                    chatMessageStompSubscription && chatMessageStompSubscription.unsubscribe();
+                    break;
+                }
+
             }
         } catch (e) {
             console.log(e)
@@ -98,7 +123,7 @@ function Chat() {
     }
 
     function handleChatMessages(msg) {
-
+        setMessages((prevMessages) => [...prevMessages, JSON.parse(msg?.body)]);
     }
 
     const content = (
@@ -131,112 +156,37 @@ function Chat() {
                     {
                         loading ? <Loading/> :
                             <div>
-                                <div className="flex-1 overflow-y-auto p-4 pb-32" style={{height:"65%"}}>
+                                <div className="flex-1 overflow-y-auto p-4 pb-32" style={{height: "65%"}}>
                                     <div className="flex flex-col space-y-2">
                                         <Typeng userName={"Jonibek"}/>
+                                        {
+                                            messages?.map(item => {
+                                                const oneMessage = item?.message;
+                                                console.log(oneMessage)
+                                                return (
+                                                    <>
+                                                        {
+                                                            oneMessage?.senderId === fulInfo?.id ?
+                                                                <div className="flex justify-end"
+                                                                     key={item?.message?.messageId}>
+                                                                    <div
+                                                                        className="bg-blue-200 text-black p-2 rounded-tl-2xl rounded-bl-2xl rounded-tr-2xl max-w-xs">
+                                                                        {oneMessage?.content}
+                                                                    </div>
+                                                                </div>
+                                                                :
+                                                                <div className="flex" key={item?.message?.messageId}>
+                                                                    <div
+                                                                        className="bg-gray-300 text-black p-2 rounded-tl-2xl rounded-br-2xl rounded-tr-2xl max-w-xs">
+                                                                        {oneMessage?.content}
+                                                                    </div>
+                                                                </div>
+                                                        }
 
-                                        <div className="flex justify-end">
-                                            <div
-                                                className="bg-blue-200 text-black p-2 rounded-tl-2xl rounded-bl-2xl rounded-tr-2xl max-w-xs">
-                                                Hey, hows your day going?
-                                            </div>
-                                        </div>
-                                        <div className="flex">
-                                            <div
-                                                className="bg-gray-300 text-black p-2 rounded-tl-2xl rounded-br-2xl rounded-tr-2xl max-w-xs">
-                                                Not too bad, just a bit busy. How about you?
-                                            </div>
-                                        </div>
-                                        <div className="flex justify-end">
-                                            <div
-                                                className="bg-blue-200 text-black p-2 rounded-tl-2xl rounded-bl-2xl rounded-tr-2xl max-w-xs">
-                                                Hey, hows your day going?
-                                            </div>
-                                        </div>
-                                        <div className="flex">
-                                            <div
-                                                className="bg-gray-300 text-black p-2 rounded-tl-2xl rounded-br-2xl rounded-tr-2xl max-w-xs">
-                                                Not too bad, just a bit busy. How about you?
-                                            </div>
-                                        </div>
-                                        <div className="flex justify-end">
-                                            <div
-                                                className="bg-blue-200 text-black p-2 rounded-tl-2xl rounded-bl-2xl rounded-tr-2xl max-w-xs">
-                                                Hey, hows your day going?
-                                            </div>
-                                        </div>
-                                        <div className="flex">
-                                            <div
-                                                className="bg-gray-300 text-black p-2 rounded-tl-2xl rounded-br-2xl rounded-tr-2xl max-w-xs">
-                                                Not too bad, just a bit busy. How about you?
-                                            </div>
-                                        </div>
-                                        <div className="flex justify-end">
-                                            <div
-                                                className="bg-blue-200 text-black p-2 rounded-tl-2xl rounded-bl-2xl rounded-tr-2xl max-w-xs">
-                                                Hey, hows your day going?
-                                            </div>
-                                        </div>
-                                        <div className="flex">
-                                            <div
-                                                className="bg-gray-300 text-black p-2 rounded-tl-2xl rounded-br-2xl rounded-tr-2xl max-w-xs">
-                                                Not too bad, just a bit busy. How about you?
-                                            </div>
-                                        </div>
-                                        <div className="flex justify-end">
-                                            <div
-                                                className="bg-blue-200 text-black p-2 rounded-tl-2xl rounded-bl-2xl rounded-tr-2xl max-w-xs">
-                                                Hey, hows your day going?
-                                            </div>
-                                        </div>
-                                        <div className="flex">
-                                            <div
-                                                className="bg-gray-300 text-black p-2 rounded-tl-2xl rounded-br-2xl rounded-tr-2xl max-w-xs">
-                                                Not too bad, just a bit busy. How about you?
-                                            </div>
-                                        </div>
-                                        <div className="flex justify-end">
-                                            <div
-                                                className="bg-blue-200 text-black p-2 rounded-tl-2xl rounded-bl-2xl rounded-tr-2xl max-w-xs">
-                                                Hey, hows your day going?
-                                            </div>
-                                        </div>
-                                        <div className="flex">
-                                            <div
-                                                className="bg-gray-300 text-black p-2 rounded-tl-2xl rounded-br-2xl rounded-tr-2xl max-w-xs">
-                                                Not too bad, just a bit busy. How about you?
-                                            </div>
-                                        </div>
-                                        <div className="flex justify-end">
-                                            <div
-                                                className="bg-blue-200 text-black p-2 rounded-tl-2xl rounded-bl-2xl rounded-tr-2xl max-w-xs">
-                                                Hey, hows your day going?
-                                            </div>
-                                        </div>
-                                        <div className="flex">
-                                            <div
-                                                className="bg-gray-300 text-black p-2 rounded-tl-2xl rounded-br-2xl rounded-tr-2xl max-w-xs">
-                                                Not too bad, just a bit busy. How about you?
-                                            </div>
-                                        </div>
-                                        <div className="flex justify-end">
-                                            <div
-                                                className="bg-blue-200 text-black p-2 rounded-tl-2xl rounded-bl-2xl rounded-tr-2xl max-w-xs">
-                                                Hey, hows your day going?
-                                            </div>
-                                        </div>
-                                        <div className="flex">
-                                            <div
-                                                className="bg-gray-300 text-black p-2 rounded-tl-2xl rounded-br-2xl rounded-tr-2xl max-w-xs">
-                                                Not too bad, just a bit busy. How about you?
-                                            </div>
-                                        </div>
-                                        <div className="flex justify-end">
-                                            <div
-                                                className="bg-blue-200 text-black p-2 rounded-tl-2xl rounded-bl-2xl rounded-tr-2xl max-w-xs">
-                                                Hey, hows your day going?
-                                            </div>
-                                        </div>
+                                                    </>
+                                                )
+                                            })
+                                        }
                                     </div>
                                 </div>
 
@@ -285,8 +235,6 @@ function Chat() {
                 </div>
             </div>
         </div>
-
-
     );
 }
 
