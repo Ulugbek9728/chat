@@ -41,10 +41,9 @@ function Chat() {
 
                 client.heartbeat.incoming = 4000;
                 client.heartbeat.outgoing = 4000;
-                client.reconnect_delay = 5000;
 
                 client
-                    .connect({'Authorization': `Bearer ${fulInfo.token}`}, () => {
+                    .connect({'Authorization': `Bearer ${fulInfo?.token}`}, () => {
                             setStompClient(client);
                             if (currentChat) {
                                 setChatMessageStompSubscription(client.subscribe(
@@ -135,12 +134,6 @@ function Chat() {
                 }}/>
     );
 
-    const onFinish = (values) => {
-        console.log('Success:', values);
-    };
-    const onFinishFailed = (errorInfo) => {
-        console.log('Failed:', errorInfo);
-    };
 
     return (
         <div>
@@ -163,7 +156,11 @@ function Chat() {
 
                     </div>
                     {
-                        loading ? <Loading/> :
+                        loading ? <Loading onCancel={() => {
+                                stompClient && stompClient.disconnect((msg) => {
+                                    console.log(msg)
+                                }, {Authorization: `Bearer ${fulInfo?.token}`});
+                            }}/> :
                             <div>
                                 <div className="flex-1 overflow-y-auto p-4 pb-32" style={{height: "84vh"}}>
                                     <div className="flex flex-col space-y-2 h-full ">
@@ -214,10 +211,9 @@ function Chat() {
                                     <Form name="basic" className='w-full'
                                           layout={"inline"}
                                           initialValues={{remember: true,}}
-                                          onFinish={onFinish}>
+                                          onFinish={sendMessage}>
                                         <Form.Item>
                                             <input type="text" placeholder="Type your message..."
-
                                                    className="flex-1 border rounded-full text-blue-900 px-4 py-2 focus:outline-none"
                                                    onChange={(e) => {
                                                        setMessage(e.target.value)
@@ -228,7 +224,7 @@ function Chat() {
 
                                         <Form.Item>
                                             {/* eslint-disable-next-line react/no-unknown-property */}
-                                            <button htmlType="submit" onClick={() => sendMessage()}
+                                            <button onClick={() => sendMessage()}
                                                     className="bg-blue-500 text-white rounded-full p-2 ml-1 hover:bg-blue-600 focus:outline-none">
                                                 <svg width="20px" height="20px" viewBox="0 0 24 24" fill="none"
                                                      xmlns="http://www.w3.org/2000/svg" stroke="#ffffff">

@@ -2,7 +2,7 @@ import "./loading.css"
 import {useNavigate} from "react-router-dom";
 
 
-function Loading() {
+function Loading({onCancel}) {
 
     const navigate = useNavigate();
 
@@ -15,6 +15,7 @@ function Loading() {
             <div className="flex mt-20">
                 <button className="text-lg text-white Partner px-9 py-2.5 my-20 mx-auto"
                         onClick={()=>{
+                            onCancel();
                             navigate("/")
                         }}
                 >

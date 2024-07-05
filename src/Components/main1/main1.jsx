@@ -10,42 +10,48 @@ import {useEffect, useState} from "react";
 
 function Main1() {
     const navigate = useNavigate();
+
+    const [fulInfo] = useState(JSON.parse(localStorage.getItem("user")));
+    const [ChatFilter] = useState(JSON.parse(localStorage.getItem("ChatFilter")));
+
     const [filtrUser, setFiltrUser] = useState({
-        topic: 'ALL',
-        gender: 'MALE',
-        partnerGender: 'MALE',
-        age: 'TO_17',
-        parametr: "",
-        partnerAges: ['TO_17','FROM_36']
+        topic: ChatFilter?.topic,
+        gender: ChatFilter?.gender,
+        partnerGender: ChatFilter?.partnerGender,
+        age: ChatFilter?.age,
+        partnerAges: ChatFilter?.partnerAges
     })
     const [srcUserAge, setSrcUserAge] = useState([
-        {
-            age: "до 17 лет",
-            value:"TO_17",
-            type: "",
-        },
-        {
-            age: "от 18 до 21 года",
-            value:"FROM_18_TO_22",
-            type: "",
-        },
-        {
-            age: "от 22 до 25 года",
-            value:"FROM_22_TO_25",
-            type: "",
-        },
-        {
-            age: "от 26 до 35 года",
-            value:"FROM_26_TO_35",
-            type: "",
-        },
-        {
-            age: "старше 36 лет",
-            value:"FROM_36",
-            type: "",
-        }
-    ])
-
+            {
+                age: "до 17 лет",
+                value: "TO_17",
+                type: '',
+            },
+            {
+                age: "от 18 до 21 года",
+                value: "FROM_18_TO_22",
+                type: '',
+            },
+            {
+                age: "от 22 до 25 года",
+                value: "FROM_22_TO_25",
+                type: "",
+            },
+            {
+                age: "от 26 до 35 года",
+                value: "FROM_26_TO_35",
+                type: "",
+            },
+            {
+                age: "старше 36 лет",
+                value: "FROM_36",
+                type: "",
+            }
+        ].map(item => {
+            if (filtrUser?.partnerAges.filter(i => i === item.value).length > 0) return {...item, type: 'ACTIVE'};
+            return item;
+        })
+    )
     const [disablet, setDisablet] = useState(false)
 
     function srcAge(e, age) {
@@ -56,27 +62,35 @@ function Main1() {
             ))
     }
 
+
     function chatNow() {
         // navigate("/chat");
+        // localStorage.removeItem("currentChat")
         const userAgeSrc = srcUserAge.filter((item) => item.type === "ACTIVE").map(item => item.value)
         const userAllFilter = {
             ...filtrUser,
-            partnerAges: filtrUser.gender === 'Некто' ? {} : ['TO_17','FROM_36']
+            partnerAges: filtrUser.gender === 'Некто' ? {} : userAgeSrc
         }
-
-        axios.post(`${domen}/api/v1/auth/register`, userAllFilter).then((res) => {
-            localStorage.setItem("user", JSON.stringify(res.data.user));
+        if (fulInfo === null) {
+            axios.post(`${domen}/api/v1/auth/register`, userAllFilter).then((res) => {
+                localStorage.setItem("user", JSON.stringify(res.data.user));
+                localStorage.setItem("ChatFilter", JSON.stringify(userAllFilter))
+                navigate("/chat");
+            }).catch((error) => {
+                console.log(error)
+            })
+        } else {
+            navigate("/chat")
             localStorage.setItem("ChatFilter", JSON.stringify(userAllFilter))
-            navigate("/chat");
-        }).catch((error) => {
-            console.log(error)
-        })
-        console.log()
+
+        }
     }
+
 
     useEffect(() => {
         srcAge()
     }, [filtrUser.topic]);
+
     useEffect(() => {
         if (filtrUser.gender === "Некто") {
             setDisablet(true);
