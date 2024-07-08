@@ -12,7 +12,7 @@ import SockJS from 'sockjs-client'
 import Loading from "@/Components/loading/loading.jsx";
 import {domen} from "../../domen.jsx"
 import Typeng from "@/Components/typengChat/typeng.jsx";
-import {Button, Checkbox, Form, Input} from 'antd';
+import {Form} from 'antd';
 
 
 function Chat() {
@@ -30,8 +30,12 @@ function Chat() {
     const [findChatStompSubscription, setFindChatStompSubscription] = useState(null);
     const [chatMessageStompSubscription, setChatMessageStompSubscription] = useState(null);
 
-    const [currentChat] = useState(JSON.parse(localStorage.getItem('currentChat')));
+    const [currentChat] = useState(localStorage.getItem('currentChat') ? JSON.parse(localStorage.getItem('currentChat')) : null);
     useEffect(() => {
+        if (fulInfo === null) {
+            navigate('/');
+            return;
+        }
         return () => {
             if (stompClient == null) {
                 const socket = new SockJS(`${domen}/chat`, null, {
@@ -44,7 +48,7 @@ function Chat() {
                 client.heartbeat.outgoing = 4000;
                 client.reconnect_delay = 5000;
 
-                client.connect({'Authorization': `Bearer ${fulInfo.token}`}, () => {
+                client.connect({'Authorization': `Bearer ${fulInfo?.token}`}, () => {
                         if (currentChat) {
                             setChatMessageStompSubscription(client.subscribe(
                                 `/message/chat/${currentChat?.chatId}`,
@@ -62,6 +66,7 @@ function Chat() {
                         console.log('error', error);
                     }
                 );
+                setStompClient(client);
             }
         }
     }, []);
@@ -75,8 +80,13 @@ function Chat() {
     }
 
     function sendMessage() {
+        console.log(currentChat)
+        if (currentChat === null) {
+            navigate('/')
+            return
+        }
         if (message.trim()) {
-            if (currentChat) {
+            if (currentChat && stompClient) {
                 const chatMessage = {
                     chatId: currentChat?.chatId,
                     content: message
@@ -84,12 +94,15 @@ function Chat() {
                 console.log(chatMessage)
                 stompClient.send(`/app/message/send`, {Authorization: `Bearer ${fulInfo?.token}`}, JSON.stringify(chatMessage));
                 setMessage('');
+            } else {
+                navigate('/')
             }
         }
     }
 
     function handleSearchChat(msg) {
-        console.log(msg?.body)
+        // console.log(msg?.body);
+        console.log('stomp is null = ' + stompClient === null)
         try {
             const message = JSON.parse(msg?.body);
             switch (message?.chat?.status) {

@@ -48,7 +48,7 @@ function Main1() {
                 type: "",
             }
         ].map(item => {
-            if (filtrUser?.partnerAges.filter(i => i === item.value).length > 0) return {...item, type: 'ACTIVE'};
+            if (filtrUser?.partnerAges?.filter(i => i === item.value).length > 0) return {...item, type: 'ACTIVE'};
             return item;
         })
     )
