@@ -64,8 +64,7 @@ function Main1() {
 
 
     function chatNow() {
-
-        // localStorage.removeItem("currentChat")
+        localStorage.removeItem("currentChat")
         const userAgeSrc = srcUserAge.filter((item) => item.type === "ACTIVE").map(item => item.value)
         const userAllFilter = {
             ...filtrUser,

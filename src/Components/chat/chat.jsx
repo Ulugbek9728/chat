@@ -162,7 +162,7 @@ function Chat() {
                     setIsPartnerTyping(true);
                     setTimeout(() => {
                         setIsPartnerTyping(false);
-                    }, 5000)
+                    }, 3000)
                 }
                 break;
             }
@@ -206,6 +206,11 @@ function Chat() {
         } else {
             console.log('finish chat error')
         }
+    }
+
+    function newChat() {
+        localStorage.removeItem('currentChat');
+        location.reload();
     }
 
     return (
@@ -276,7 +281,9 @@ function Chat() {
                                                 Изменить параметры
                                             </button>
                                             <button
-                                                className="bg-emerald-600 text-white px-5 py-2.5  min-w-60 rounded-2xl">Начать
+                                                className="bg-emerald-600 text-white px-5 py-2.5  min-w-60 rounded-2xl"
+                                                onClick={()=>newChat()}
+                                            >Начать
                                                 новый чат
                                             </button>
                                         </div>
