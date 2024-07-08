@@ -76,15 +76,18 @@ function Chat() {
 
     function sendSearchChat() {
         const chatFilter = localStorage.getItem('ChatFilter');
-         const request = chatFilter ? JSON.parse(chatFilter) : {};
+        console.log(chatFilter)
+        if (chatFilter === null) {
+            navigate('/')
+            return
+        }
+        const request = JSON.parse(chatFilter);
         const body = {
             age: request.age,
             gender: request.gender,
             partnerGender: request.partnerGender,
             partnerAges: request.partnerAges
         };
-        console.log(chatFilter)
-        console.log(body)
         stompClient && stompClient.send(
             '/app/chat/match',
             {Authorization: `Bearer ${fulInfo?.token}`},
