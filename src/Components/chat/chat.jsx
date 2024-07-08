@@ -5,7 +5,7 @@ import data from '@emoji-mart/data'
 import Picker from '@emoji-mart/react'
 import {SmileTwoTone} from '@ant-design/icons';
 import {Popover} from 'antd';
-import {useEffect, useState} from "react";
+import {useEffect, useRef, useState} from "react";
 
 import {Stomp} from '@stomp/stompjs';
 import SockJS from 'sockjs-client'
@@ -27,11 +27,12 @@ function Chat() {
     const [message, setMessage] = useState('')
     const [loading, setLoading] = useState(false)
     const [tugatishBtn, setTugatishBtn] = useState(false)
-    const [stompClient, setStompClient] = useState(null)
+    const stompClient = useRef(null);
+
     const [findChatStompSubscription, setFindChatStompSubscription] = useState(null);
     const [chatMessageStompSubscription, setChatMessageStompSubscription] = useState(null);
 
-    const [currentChat] = useState(localStorage.getItem('currentChat') ? JSON.parse(localStorage.getItem('currentChat')) : null);
+    const [currentChat] = useState(JSON.parse(localStorage.getItem('currentChat')));
 
     useEffect(() => {
         if (currentChat?.status === "CLOSED") {
@@ -43,8 +44,8 @@ function Chat() {
             navigate('/');
             return;
         }
-        return () => {
-            if (stompClient === null) {
+        return async () => {
+            if (stompClient.current === null) {
                 const socket = new SockJS(`${domen}/chat`, null, {
                     transports: ['websocket'],
                     withCredentials: true
@@ -55,7 +56,7 @@ function Chat() {
                 client.heartbeat.outgoing = 4000;
                 client.reconnect_delay = 5000;
 
-                client.connect({'Authorization': `Bearer ${fulInfo?.token}`}, () => {
+                await client.connect({'Authorization': `Bearer ${fulInfo?.token}`}, () => {
                         if (currentChat) {
                             setChatMessageStompSubscription(client.subscribe(
                                 `/message/chat/${currentChat?.chatId}`,
@@ -68,19 +69,19 @@ function Chat() {
                         } else {
                             setFindChatStompSubscription(client.subscribe(`/match-chat/${fulInfo?.id}`, handleSearchChat));
                         }
-                        setStompClient(client);
                     },
                     (error) => {
                         console.log('error', error);
                     }
                 );
+                stompClient.current = client;
             }
         }
     }, []);
 
     useEffect(() => {
-        stompClient && !currentChat && sendSearchChat();
-    }, [stompClient]);
+        if (stompClient?.current !== null && localStorage.getItem('currentChat') === null) sendSearchChat();
+    }, [stompClient?.current]);
 
     function sendSearchChat() {
         const chatFilter = localStorage.getItem('ChatFilter');
@@ -88,6 +89,7 @@ function Chat() {
             navigate('/')
             return
         }
+
         const request = JSON.parse(chatFilter);
         const body = {
             age: request.age,
@@ -95,7 +97,10 @@ function Chat() {
             partnerGender: request.partnerGender,
             partnerAges: request.partnerAges
         };
-        stompClient && stompClient.send(
+        setTugatishBtn(false)
+        setLoading(true);
+        setIsChatActive(false)
+        stompClient?.current && stompClient?.current?.send(
             '/app/chat/match',
             {Authorization: `Bearer ${fulInfo?.token}`},
             JSON.stringify(body)
@@ -103,22 +108,14 @@ function Chat() {
     }
 
     function sendMessage() {
-        if (currentChat === null) {
-            stompClient && stompClient.deactivate();
-            navigate('/')
-            return
-        }
         if (message.trim()) {
-            if (currentChat && stompClient) {
+            if (stompClient?.current !== null) {
                 const chatMessage = {
-                    chatId: currentChat?.chatId,
+                    chatId: JSON.parse(localStorage.getItem('currentChat'))?.chatId,
                     content: message
                 }
-                console.log(chatMessage)
-                stompClient.send(`/app/message/send`, {Authorization: `Bearer ${fulInfo?.token}`}, JSON.stringify(chatMessage));
+                stompClient?.current.send(`/app/message/send`, {Authorization: `Bearer ${fulInfo?.token}`}, JSON.stringify(chatMessage));
                 setMessage('');
-            } else {
-                navigate('/')
             }
         }
     }
@@ -128,18 +125,16 @@ function Chat() {
             const message = JSON.parse(msg?.body);
             switch (message?.chat?.status) {
                 case 'WAITING_TO_START': {
-                    console.log("WAITING_TO_START")
                     setLoading(true);
                     break;
                 }
                 case 'ACTIVE': {
-                    console.log("active")
                     setIsChatActive(true)
                     setTugatishBtn(true);
                     setLoading(false)
                     findChatStompSubscription && findChatStompSubscription.unsubscribe();
                     localStorage.setItem('currentChat', JSON.stringify(message?.chat));
-                    const subscribe = stompClient.subscribe(
+                    const subscribe = stompClient?.current.subscribe(
                         `/message/chat/${message?.chat?.chatId}`,
                         handleChatMessages,
                         {Authorization: `Bearer ${fulInfo?.token}`},
@@ -156,7 +151,7 @@ function Chat() {
 
     function handleChatMessages(msg) {
         const receivedMessage = JSON.parse(msg?.body);
-        console.log("test"+receivedMessage?.action)
+        console.log("test" + receivedMessage?.action)
         switch (receivedMessage?.action) {
             case 'new.message': {
                 setMessages((prevMessages) => [...prevMessages, receivedMessage]);
@@ -172,7 +167,6 @@ function Chat() {
                 break;
             }
             case 'chat.change.status': {
-                console.log(receivedMessage.action)
                 localStorage.setItem('currentChat', JSON.stringify({...currentChat, status: 'CLOSED'}));
                 setTugatishBtn(false);
                 setIsChatActive(false)
@@ -191,22 +185,24 @@ function Chat() {
                 }}
         />
     );
+
     function sendChatAction(action) {
-        stompClient && stompClient.send(
+        stompClient?.current && stompClient?.current.send(
             '/app/chat-action/send',
             {Authorization: `Bearer ${fulInfo?.token}`},
-            JSON.stringify({chatId: currentChat?.chatId, action: action})
+            JSON.stringify({chatId: JSON.parse(localStorage.getItem('currentChat'))?.chatId, action: action})
         );
     }
 
     function finishChat() {
-        if (currentChat && isChatActive && chatMessageStompSubscription && stompClient) {
-            stompClient.send('/app/chat/finish', {Authorization: `Bearer ${fulInfo?.token}`}, JSON.stringify({chatId: currentChat?.chatId}));
+        if (isChatActive && chatMessageStompSubscription !== null && stompClient?.current !== null) {
+            stompClient?.current.send('/app/chat/finish', {Authorization: `Bearer ${fulInfo?.token}`}, JSON.stringify({chatId: JSON.parse(localStorage.getItem('currentChat'))?.chatId}));
             localStorage.setItem('currentChat', JSON.stringify({...currentChat, status: 'CLOSED'}));
+            console.log('finishchat')
             setIsChatActive(false);
-            setTugatishBtn(false)
+            setTugatishBtn(false);
             chatMessageStompSubscription.unsubscribe();
-            stompClient.disconnect();
+            stompClient?.current?.disconnect();
         } else {
             console.log('finish chat error')
         }
@@ -231,7 +227,7 @@ function Chat() {
                     </div>
                     {
                         loading ? <Loading onCancel={() => {
-                                stompClient && stompClient.disconnect((msg) => {
+                                stompClient?.current && stompClient?.current?.disconnect((msg) => {
                                     console.log(msg)
                                 }, {Authorization: `Bearer ${fulInfo?.token}`});
                             }}/> :
@@ -273,11 +269,10 @@ function Chat() {
                                         <p className='text-center text-black'>Собеседник завершил чат:</p>
                                         <div className="flex gap-5  justify-center w-full">
                                             <button className='bg-blue-500 text-white px-5 py-2.5 min-w-60 rounded-2xl'
-                                            onClick={()=>{
-                                                navigate('/')
-                                                localStorage.removeItem('currentChat')
-
-                                            }}>
+                                                    onClick={() => {
+                                                        localStorage.removeItem('currentChat')
+                                                        navigate('/')
+                                                    }}>
                                                 Изменить параметры
                                             </button>
                                             <button
@@ -288,20 +283,20 @@ function Chat() {
                                     </div>
                                 }
 
-                                <div className={`bg-white p-4 flex items-center absolute bottom-0 w-full  ${!isChatActive ? 'hidden' : ''}`}>
+                                <div
+                                    className={`bg-white p-4 flex items-center absolute bottom-0 w-full  ${!isChatActive ? 'hidden' : ''}`}>
                                     <Popover theme="dark" placement="topLeft" content={content} trigger="click">
-                                        <SmileTwoTone className="w-10 h-auto stiker" disabled={!isChatActive}/>
+                                        <SmileTwoTone className="w-10 h-auto stiker"/>
                                     </Popover>
 
                                     <Form name="basic" className='w-full'
                                           layout={"inline"}
                                           initialValues={{remember: true,}}
                                           onFinish={sendMessage}
-                                          disabled={!isChatActive}
                                     >
                                         <Form.Item>
                                             <input type="text" placeholder="Type your message..."
-                                                   disabled={!isChatActive}
+
                                                    className="flex-1 border rounded-full text-blue-900 px-4 py-2 focus:outline-none"
                                                    onChange={(e) => {
                                                        setMessage(e.target.value);
@@ -315,7 +310,6 @@ function Chat() {
                                             {/* eslint-disable-next-line react/no-unknown-property */}
                                             <button onClick={() => sendMessage()}
                                                     className="bg-blue-500 text-white rounded-full p-2 ml-1 hover:bg-blue-600 focus:outline-none"
-                                                    disabled={!isChatActive}
                                             >
                                                 <svg width="20px" height="20px" viewBox="0 0 24 24" fill="none"
                                                      xmlns="http://www.w3.org/2000/svg" stroke="#ffffff">
