@@ -22,6 +22,7 @@ function Chat() {
 
     const [messages, setMessages] = useState([])
     const [isPartnerTyping, setIsPartnerTyping] = useState(false)
+    const [isChatActive, setIsChatActive] = useState(false)
 
     const [message, setMessage] = useState('')
     const [loading, setLoading] = useState(false)
@@ -47,7 +48,9 @@ function Chat() {
                 client.heartbeat.incoming = 4000;
                 client.heartbeat.outgoing = 4000;
                 client.reconnect_delay = 5000;
-
+                client.onDisconnect((disconnect) => {
+                    console.log(disconnect)
+                });
                 client.connect({'Authorization': `Bearer ${fulInfo?.token}`}, () => {
                         if (currentChat) {
                             setChatMessageStompSubscription(client.subscribe(
@@ -55,6 +58,7 @@ function Chat() {
                                 handleChatMessages,
                                 {Authorization: `Bearer ${fulInfo?.token}`},
                             ));
+                            setIsChatActive(true)
                             setLoading(false);
                             setTugatishBtn(true);
                         } else {
@@ -76,7 +80,6 @@ function Chat() {
 
     function sendSearchChat() {
         const chatFilter = localStorage.getItem('ChatFilter');
-        console.log(chatFilter)
         if (chatFilter === null) {
             navigate('/')
             return
@@ -96,7 +99,6 @@ function Chat() {
     }
 
     function sendMessage() {
-        console.log(currentChat)
         if (currentChat === null) {
             stompClient && stompClient.deactivate();
             navigate('/')
@@ -118,8 +120,6 @@ function Chat() {
     }
 
     function handleSearchChat(msg) {
-        // console.log(msg?.body);
-        console.log('stomp is null = ' + stompClient === null)
         try {
             const message = JSON.parse(msg?.body);
             switch (message?.chat?.status) {
@@ -130,11 +130,13 @@ function Chat() {
                 case 'ACTIVE': {
                     findChatStompSubscription && findChatStompSubscription.unsubscribe();
                     localStorage.setItem('currentChat', JSON.stringify(message?.chat));
-                    message?.chat?.chatId && setChatMessageStompSubscription(stompClient.subscribe(
+                    const subscribe = stompClient.subscribe(
                         `/message/chat/${message?.chat?.chatId}`,
                         handleChatMessages,
                         {Authorization: `Bearer ${fulInfo?.token}`},
-                    ));
+                    );
+                    message?.chat?.chatId && setChatMessageStompSubscription(subscribe);
+                    setIsChatActive(true)
                     setTugatishBtn(true);
                     break;
                 }
@@ -151,7 +153,6 @@ function Chat() {
 
     function handleChatMessages(msg) {
         const receivedMessage = JSON.parse(msg?.body);
-        console.log(receivedMessage)
         switch (receivedMessage?.action) {
             case 'new.message': {
                 setMessages((prevMessages) => [...prevMessages, receivedMessage]);
@@ -164,6 +165,11 @@ function Chat() {
                         setIsPartnerTyping(false);
                     }, 5000)
                 }
+                break;
+            }
+            case 'chat.change.status': {
+                setTugatishBtn(false);
+                setIsChatActive(false)
                 break;
             }
         }
@@ -189,6 +195,19 @@ function Chat() {
         );
     }
 
+    function finishChat() {
+        if (currentChat && isChatActive && chatMessageStompSubscription && stompClient) {
+            stompClient.send('/app/chat/finish', {Authorization: `Bearer ${fulInfo?.token}`}, JSON.stringify({chatId: currentChat?.chatId}));
+            localStorage.setItem('currentChat', JSON.stringify({...currentChat, status: 'CLOSED'}));
+            setIsChatActive(false);
+            setTugatishBtn(false)
+            chatMessageStompSubscription.unsubscribe();
+            stompClient.disconnect();
+        } else {
+            console.log('finish chat error')
+        }
+    }
+
     return (
         <div>
             <div className='bg-gray-400 dark:bg-slate-600 chat'>
@@ -199,7 +218,7 @@ function Chat() {
                         {
                             tugatishBtn ? <button id="login" className="bg-red-500 rounded-md px-2 py-1"
                                                   onClick={() => {
-                                                      // navigate("/");
+                                                      finishChat();
                                                   }}
                             >
                                 Завершить чат
@@ -258,18 +277,20 @@ function Chat() {
                                     </div>
                                 }
 
-                                <div className="bg-white p-4 flex items-center absolute bottom-0 w-full">
-                                    <Popover theme="dark" placement="topLeft" content={content} trigger="click">
-                                        <SmileTwoTone className="w-10 h-auto stiker"/>
+                                <div className={`bg-white p-4 flex items-center absolute bottom-0 w-full  ${!isChatActive ? 'hidden':''}`} >
+                                    <Popover theme="dark" placement="topLeft" content={content} trigger="click" >
+                                        <SmileTwoTone className="w-10 h-auto stiker" disabled={!isChatActive}/>
                                     </Popover>
 
                                     <Form name="basic" className='w-full'
                                           layout={"inline"}
                                           initialValues={{remember: true,}}
-                                          onFinish={sendMessage}>
+                                          onFinish={sendMessage}
+                                          disabled={!isChatActive}
+                                    >
                                         <Form.Item>
                                             <input type="text" placeholder="Type your message..."
-
+                                                   disabled={!isChatActive}
                                                    className="flex-1 border rounded-full text-blue-900 px-4 py-2 focus:outline-none"
                                                    onChange={(e) => {
                                                        setMessage(e.target.value);
@@ -282,7 +303,9 @@ function Chat() {
                                         <Form.Item>
                                             {/* eslint-disable-next-line react/no-unknown-property */}
                                             <button onClick={() => sendMessage()}
-                                                    className="bg-blue-500 text-white rounded-full p-2 ml-1 hover:bg-blue-600 focus:outline-none">
+                                                    className="bg-blue-500 text-white rounded-full p-2 ml-1 hover:bg-blue-600 focus:outline-none"
+                                                    disabled={!isChatActive}
+                                            >
                                                 <svg width="20px" height="20px" viewBox="0 0 24 24" fill="none"
                                                      xmlns="http://www.w3.org/2000/svg" stroke="#ffffff">
                                                     <g id="SVGRepo_bgCarrier" strokeWidth="0"></g>
@@ -296,15 +319,12 @@ function Chat() {
                                                     </g>
                                                 </svg>
                                             </button>
-
                                         </Form.Item>
                                     </Form>
                                 </div>
 
                             </div>
                     }
-
-
                 </div>
             </div>
         </div>
