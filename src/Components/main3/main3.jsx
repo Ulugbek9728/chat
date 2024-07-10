@@ -5,7 +5,7 @@ function Main3() {
     return (
         <div className={`${style.container} grid grid-cols-2 gap-20`}>
             <div className=" dark:text-white">
-                <h2 className='text-2xl font-bold dark:text-white text-indigo-600'>Meet New People Today!</h2>
+                <h2 className='text-2xl font-bold dark:text-white text-sky-800'>Meet New People Today!</h2>
                 <h2 className='text-6xl font-bold mt-5'>Start Flirting</h2>
                 <p className='text-2xl font-thin mt-10'>
                     Lorem ipsum dolor sit amet, consectetur adipisicing elit. Accusantium, delectus eos fugiat labore

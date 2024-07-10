@@ -10,7 +10,7 @@ const LanguageSwitcherStyle = styled.div`
   z-index: 100;
 
   .dropdown__item, .dropdown__menu__item {
-    color: #fff;
+    color: white;
     font-size: 20px;
     font-weight: 500;
     line-height: 24px;

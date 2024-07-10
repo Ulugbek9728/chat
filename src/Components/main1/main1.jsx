@@ -10,10 +10,8 @@ import {useEffect, useState} from "react";
 
 function Main1() {
     const navigate = useNavigate();
-
     const [fulInfo] = useState(JSON.parse(localStorage.getItem("user")));
     const [ChatFilter] = useState(JSON.parse(localStorage.getItem("ChatFilter")));
-
     const [filtrUser, setFiltrUser] = useState({
         topic: ChatFilter?.topic,
         gender: ChatFilter?.gender,
@@ -85,7 +83,6 @@ function Main1() {
         }
     }
 
-
     useEffect(() => {
         srcAge()
     }, [filtrUser.topic]);
@@ -107,10 +104,10 @@ function Main1() {
             <div className={`${style.container}`}>
                 <div className="grid grid-cols-2 gap-5 xl:gap-16 ">
                     <div className=''>
-                        <p className='text-white text-4xl font-bold uppercase'>
+                        <p className='text-sky-800 text-4xl font-bold uppercase'>
                             find friend youre life
                         </p>
-                        <div className=" dark:bg-primary w-full bg-blue-50 rounded-3xl drop-shadow-2xl mt-10 p-5">
+                        <div className=" dark:bg-primary w-full bg-blue-50 rounded-3xl shadow-lg shadow-sky-800  mt-10 p-5">
                             <div className="flex gap-2">
                                 <DarkMode/>
                             </div>
@@ -204,8 +201,8 @@ function Main1() {
                                             srcUserAge.map((item, index) =>
                                                 <button
                                                     key={index}
-                                                    className={`border border-white bg-slate-800 rounded-lg mt-0.4 w-full text-white h-11  ${item.type}
-                                                    hover:text-blue-600 text-sm`}
+                                                    className={`border border-white bg-sky-800 rounded-lg mt-0.4 w-full text-white h-11  ${item.type}
+                                                     text-sm`}
                                                     onClick={() => srcAge("ACTIVE", item.age)}
                                                 >
                                                     {item?.age}
@@ -218,10 +215,7 @@ function Main1() {
                             </div>
                             <div className="flex justify-center">
                                 <button className='text-lg text-white Partner mt-10 mb-5 px-9 py-2.5 my-20'
-                                        onClick={() => {
-                                            chatNow()
-
-                                        }}>
+                                        onClick={() => {chatNow()}}>
                                     Начать чат
                                 </button>
 

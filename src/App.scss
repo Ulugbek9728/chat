@@ -1,6 +1,6 @@
 .App{
   width: 100%;
-  background-image: url("./img/Bk4Ev.png");
+  //background-image: url("./img/Bk4Ev.png");
   background-repeat: no-repeat;
   background-size: 100% 100vh;
 
@@ -8,6 +8,24 @@
     &::before{
       content: '';
       width: 0!important;
+    }
+  }
+  .ant-radio-button-wrapper{
+    border-color: inherit!important;
+    background: #075985!important;
+    //background: #019ae1!important;
+
+    &:hover{
+      color: white!important;
+      background-color: #f65130;
+    }
+
+  }
+  .ant-radio-button-checked{
+    background-color: #f65130;
+
+    &:hover{
+      color: white!important;
     }
   }
 }

@@ -16,8 +16,8 @@ function App() {
         <div className={`App bg-blue-50 dark:bg-slate-500`}>
             <Navbar/>
             <Main1/>
-            <Main2/>
-            <Main3/>
+            {/*<Main2/>*/}
+            {/*<Main3/>*/}
             {/*<Main4/>*/}
             {/*<Main5/>*/}
             {/*<video src=""></video>*/}
