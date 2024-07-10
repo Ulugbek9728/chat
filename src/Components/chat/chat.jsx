@@ -66,6 +66,7 @@ function Chat() {
                             setIsChatActive(true)
                             setLoading(false);
                             setTugatishBtn(true);
+                            client.send(`/app/message/old-chats/${currentChat?.chatId}`, {Authorization: `Bearer ${fulInfo?.token}`}, '')
                         } else {
                             setFindChatStompSubscription(client.subscribe(`/match-chat/${fulInfo?.id}`, handleSearchChat));
                         }
@@ -140,6 +141,7 @@ function Chat() {
                         {Authorization: `Bearer ${fulInfo?.token}`},
                     );
                     message?.chat?.chatId && setChatMessageStompSubscription(subscribe);
+                    stompClient.current?.send(`/app/message/old-chats/${currentChat?.chatId}`, {Authorization: `Bearer ${fulInfo?.token}`}, '')
 
                     break;
                 }
@@ -149,9 +151,10 @@ function Chat() {
         }
     }
 
+    console.log(messages)
+
     function handleChatMessages(msg) {
         const receivedMessage = JSON.parse(msg?.body);
-        console.log("test" + receivedMessage?.action)
         switch (receivedMessage?.action) {
             case 'new.message': {
                 setMessages((prevMessages) => [...prevMessages, receivedMessage]);
@@ -171,6 +174,17 @@ function Chat() {
                 setTugatishBtn(false);
                 setIsChatActive(false)
                 break;
+            }
+            case "old.messages": {
+                console.log(receivedMessage.messages)
+                setMessages(
+                    receivedMessage?.messages?.map((item) => {
+                        return {
+                            message: item
+                        }
+                    })
+                )
+                break
             }
         }
     }
@@ -282,7 +296,7 @@ function Chat() {
                                             </button>
                                             <button
                                                 className="bg-emerald-600 text-white px-5 py-2.5  min-w-60 rounded-2xl"
-                                                onClick={()=>newChat()}
+                                                onClick={() => newChat()}
                                             >Начать
                                                 новый чат
                                             </button>

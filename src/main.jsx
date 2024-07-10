@@ -11,7 +11,6 @@ import "./utils/i18n";
 import Chat from "@/Components/chat/chat.jsx";
 
 
-
 const router=createBrowserRouter([
     {
         path: "/",
@@ -25,10 +24,7 @@ const router=createBrowserRouter([
         path: "chat",
         element: <Chat/>,
     },
-    // {
-    //     path: "projects",
-    //     element: <Project/>,
-    // },
+
 
 ])
 
