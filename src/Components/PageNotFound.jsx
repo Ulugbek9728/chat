@@ -1,12 +1,16 @@
-import React from 'react';
 import Navbar from "./navbar/navbar.jsx";
+import img from "../../public/img/404.svg"
+import Footer from "@/Components/footer/footer.jsx";
 
-function PageNotFound(props) {
+function PageNotFound() {
     return (
         <div>
             <Navbar/>
-            <hr/>
-            <img style={{width:'30%', marginTop:'2%'}} className='mx-auto' src="./img/404-error.svg" alt=""/>
+            <div style={{height:"81vh"}} className=" bg-blue-50 pt-20">
+                {/*<p className='text-center text-sky-800 font-bold text-4xl'>Siz bu platformadan bloklandingiz !</p>*/}
+                <img style={{width:'30%'}} className='mx-auto' src={img} alt=""/>
+            </div>
+            <Footer/>
         </div>
     );
 }

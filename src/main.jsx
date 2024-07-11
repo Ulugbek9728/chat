@@ -17,7 +17,6 @@ const router=createBrowserRouter([
         element: (<App/>),
         errorElement:<PageNotFound/>,
         children:[
-
         ]
     },
     {

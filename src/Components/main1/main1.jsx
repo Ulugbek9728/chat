@@ -100,7 +100,7 @@ function Main1() {
     }, [filtrUser.gender, filtrUser.topic]);
 
     return (
-        <div className='main'>
+        <div className='main mt-8'>
             <div className={`${style.container}`}>
                 <div className="grid grid-cols-2 gap-5 xl:gap-16 ">
                     <div className=''>

@@ -83,6 +83,11 @@ function Chat() {
     useEffect(() => {
         if (stompClient?.current !== null && localStorage.getItem('currentChat') === null) sendSearchChat();
     }, [stompClient?.current]);
+    useEffect(()=>{
+        setTimeout(() => {
+            setIsPartnerTyping(false);
+        }, 3000)
+    },[isPartnerTyping])
 
     function sendSearchChat() {
         const chatFilter = localStorage.getItem('ChatFilter');
@@ -141,7 +146,7 @@ function Chat() {
                         {Authorization: `Bearer ${fulInfo?.token}`},
                     );
                     message?.chat?.chatId && setChatMessageStompSubscription(subscribe);
-                    stompClient.current?.send(`/app/message/old-chats/${currentChat?.chatId}`, {Authorization: `Bearer ${fulInfo?.token}`}, '')
+                    stompClient.current?.send(`/app/message/old-chats/${message?.chat?.chatId}`, {Authorization: `Bearer ${fulInfo?.token}`}, '')
 
                     break;
                 }
@@ -150,8 +155,6 @@ function Chat() {
             console.log(e)
         }
     }
-
-    console.log(messages)
 
     function handleChatMessages(msg) {
         const receivedMessage = JSON.parse(msg?.body);
@@ -163,9 +166,8 @@ function Chat() {
             case 'chat.action': {
                 if (receivedMessage?.typedUserId !== fulInfo?.id) {
                     setIsPartnerTyping(true);
-                    setTimeout(() => {
-                        setIsPartnerTyping(false);
-                    }, 3000)
+
+
                 }
                 break;
             }
@@ -231,11 +233,11 @@ function Chat() {
         <div>
             <div className='bg-gray-400 dark:bg-slate-600 chat'>
                 <div className="bg-gray-100 h-screen flex flex-col max-w-2xl mx-auto drop-shadow-2xl overflow-y-hidden">
-                    <div className="bg-blue-500 p-4 text-white flex justify-between items-center">
+                    <div style={{backgroundColor:"#f65130"}} className=" p-4 text-white flex justify-between items-center">
                         <DarkMode/>
                         <span>Chat anonim</span>
                         {
-                            tugatishBtn ? <button id="login" className="bg-red-500 rounded-md px-2 py-1"
+                            tugatishBtn ? <button id="login" className="bg-sky-800 rounded-md px-2 py-1"
                                                   onClick={() => {
                                                       finishChat();
                                                   }}

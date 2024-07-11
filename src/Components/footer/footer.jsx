@@ -4,8 +4,8 @@ import "./footer.scss"
 
 function Footer() {
     return (
-        <div className='footer bg-sky-800'>
-            <div className={`${style.container} ${style.padding} mb-0 text-center text-white`}>
+        <div className='footer bg-sky-800 '>
+            <div className={`${style.container} ${style.padding} mb-0 text-center text-white mt-0`}>
                 All Rights Reserved By
             </div>
         </div>
