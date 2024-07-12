@@ -16,20 +16,23 @@ import UserBlock from "@/Components/userBlock.jsx";
 
 function App() {
     const [fulInfo] = useState(JSON.parse(localStorage.getItem("user")));
-    const [UserActive, setUserActive] = useState(true)
+    const [UserActive, setUserActive] = useState(false)
 
-    console.log(fulInfo)
 
 
     useEffect(()=>{
         return()=>{
-            axios.get(`${domen}/user/is-valid`,
-                {headers: {"Authorization": `Bearer ${fulInfo?.token}`}}).then((response) => {
-                console.log(response.data);
-                setUserActive(response.data.isUserBlocked)
-            }).catch((error) => {
-                console.log(error)
-            });
+            if (fulInfo!==null){
+                console.log(123)
+                axios.get(`${domen}/user/is-valid`,
+                    {headers: {"Authorization": `Bearer ${fulInfo?.token}`}}).then((response) => {
+                    console.log(response.data);
+                    setUserActive(response.data.isUserBlocked)
+                }).catch((error) => {
+                    console.log(error)
+                });
+            }
+
 
         }
 

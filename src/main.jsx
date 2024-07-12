@@ -9,6 +9,11 @@ import "./main.css"
 import PageNotFound from "./Components/PageNotFound.jsx";
 import "./utils/i18n";
 import Chat from "@/Components/chat/chat.jsx";
+import {ToastContainer} from "react-toastify";
+import "react-toastify/dist/ReactToastify.css"
+import Login from "@/Components/login/login.jsx";
+
+
 
 
 const router=createBrowserRouter([
@@ -23,12 +28,18 @@ const router=createBrowserRouter([
         path: "chat",
         element: <Chat/>,
     },
+    {
+        path: "login_chat_admin",
+        element: <Login/>,
+    },
 
 
 ])
 
 ReactDOM.createRoot(document.getElementById('root')).render(
   <React.StrictMode>
+      <ToastContainer/>
+
       <RouterProvider router={router}/>
   </React.StrictMode>,
 )

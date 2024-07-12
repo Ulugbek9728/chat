@@ -6,7 +6,7 @@ import LanguageSwitcher from "../../LanguageSwitcher/index.jsx";
 function Navbar() {
     return (
 
-        <div className={`${style.container, style.padding} border bg-sky-800 mt-0 mb-0 dark:bg-blue-2000`}>
+        <div className={`${style.container, style.padding} border bg-bluee mt-0 mb-0 dark:bg-blue-2000`}>
             <div className="flex flex-wrap justify-between items-center mx-auto max-w-screen-xl">
                 <NavLink to="/" className="flex items-center space-x-3 rtl:space-x-reverse">
                     <img src="./logo.png" className="h-14" alt="Flowbite Logo"/>

@@ -7,6 +7,8 @@ import axios from "axios";
 import {domen} from "../../domen.jsx"
 import DarkMode from "../darkMode/darkMode.jsx";
 import {useEffect, useState} from "react";
+import {toast} from "react-toastify";
+
 
 function Main1() {
     const navigate = useNavigate();
@@ -50,6 +52,8 @@ function Main1() {
             return item;
         })
     )
+    const [message, setMessage] = useState('');
+    const [sucsessText, setSucsessText] = useState('');
     const [disablet, setDisablet] = useState(false)
 
     function srcAge(e, age) {
@@ -75,6 +79,7 @@ function Main1() {
                 navigate("/chat");
             }).catch((error) => {
                 console.log(error)
+                setMessage(error.message)
             })
         } else {
             navigate("/chat")
@@ -99,15 +104,30 @@ function Main1() {
 
     }, [filtrUser.gender, filtrUser.topic]);
 
+    useEffect(() => {
+        setMessage('')
+        setSucsessText('')
+        notify();
+    }, [message, sucsessText,]);
+
+    function notify() {
+        if (sucsessText !== '') {
+            toast.success(sucsessText)
+        }
+        if (message !== '') {
+            toast.error(message)
+        }
+    }
+
     return (
         <div className='main mt-8'>
             <div className={`${style.container}`}>
                 <div className="grid grid-cols-2 gap-5 xl:gap-16 ">
                     <div className=''>
-                        <p className='text-sky-800 text-4xl font-bold uppercase'>
+                        <p className='text-bluee text-4xl font-bold uppercase'>
                             find friend youre life
                         </p>
-                        <div className=" dark:bg-primary w-full bg-blue-50 rounded-3xl shadow-lg shadow-sky-800  mt-10 p-5">
+                        <div className=" dark:bg-primary w-full bg-blue-50 rounded-3xl shadow-lg shadow-bluee  mt-10 p-5">
                             <div className="flex gap-2">
                                 <DarkMode/>
                             </div>
@@ -126,11 +146,11 @@ function Main1() {
                                                          })
                                                      }}>
 
-                                            <Radio.Button className='bg-slate-800 text-white h-full w-24 pt-1.5'
+                                            <Radio.Button className='bg-bluee text-white h-full w-24 pt-1.5'
                                                           value="DOES_NOT_HAVE">Некто</Radio.Button>
-                                            <Radio.Button className='bg-slate-800 text-white h-full w-20 pt-1.5'
+                                            <Radio.Button className='bg-bluee text-white h-full w-20 pt-1.5'
                                                           value="MALE">M</Radio.Button>
-                                            <Radio.Button className='bg-slate-800 text-white h-full w-20 pt-1.5'
+                                            <Radio.Button className='bg-bluee text-white h-full w-20 pt-1.5'
                                                           value="FEMALE ">Ж</Radio.Button>
                                         </Radio.Group>
                                     </Flex>
@@ -146,13 +166,13 @@ function Main1() {
                                                              partnerGender: e.target.value
                                                          })
                                                      }}>
-                                            <Radio.Button className='bg-slate-800 text-white h-full w-24 pt-1.5'
+                                            <Radio.Button className='bg-bluee text-white h-full w-24 pt-1.5'
                                                           value="DOES_NOT_HAVE">Не важно</Radio.Button>
                                             <Radio.Button disabled={disablet}
-                                                          className={`bg-slate-800 text-white h-full w-20 pt-1.5`}
+                                                          className={`bg-bluee text-white h-full w-20 pt-1.5`}
                                                           value="MALE">M</Radio.Button>
                                             <Radio.Button disabled={disablet}
-                                                          className='bg-slate-800 text-white h-full w-20 pt-1.5'
+                                                          className='bg-bluee text-white h-full w-20 pt-1.5'
                                                           value="FEMALE ">Ж</Radio.Button>
                                         </Radio.Group>
                                     </Flex>
@@ -179,7 +199,7 @@ function Main1() {
                                                     srcUserAge.map((item, index) => {
                                                             return (
                                                                 <Radio.Button key={index}
-                                                                              className={`bg-slate-800 mt-2 rounded-lg w-full text-white h-11 pt-1.5`}
+                                                                              className={`bg-bluee mt-2 rounded-lg w-full text-white h-11 pt-1.5`}
                                                                               value={item.value}
                                                                 >
                                                                     {item?.age}
@@ -201,7 +221,7 @@ function Main1() {
                                             srcUserAge.map((item, index) =>
                                                 <button
                                                     key={index}
-                                                    className={`border border-white bg-sky-800 rounded-lg mt-0.4 w-full text-white h-11  ${item.type}
+                                                    className={`border border-white bg-bluee rounded-lg mt-0.4 w-full text-white h-11  ${item.type}
                                                      text-sm`}
                                                     onClick={() => srcAge("ACTIVE", item.age)}
                                                 >
@@ -214,7 +234,7 @@ function Main1() {
 
                             </div>
                             <div className="flex justify-center">
-                                <button className='text-lg text-white Partner mt-10 mb-5 px-9 py-2.5 my-20'
+                                <button className='text-lg text-white bg-bluee Partner mt-10 mb-5 px-9 py-2.5 my-20'
                                         onClick={() => {chatNow()}}>
                                     Начать чат
                                 </button>

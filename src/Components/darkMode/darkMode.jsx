@@ -42,7 +42,7 @@ function DarkMode() {
     }, [theme]);
 
     return (
-        <div className='bg-sky-800 rounded-lg '>
+        <div className='bg-bluee rounded-lg '>
             {
                 options?.map(opt=>(
                     <button key={opt.text} className={`w-8 h-8 mx-3 leading-9 text-xl rounded-full m-1 text-white ${
