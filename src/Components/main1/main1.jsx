@@ -122,7 +122,7 @@ function Main1() {
     return (
         <div className='main mt-8'>
             <div className={`${style.container}`}>
-                <div className="grid grid-cols-2 gap-5 xl:gap-16 ">
+                <div className="grid grid-cols-2 gap-5 xl:gap-16 pb-40">
                     <div className=''>
                         <p className='text-bluee text-4xl font-bold uppercase'>
                             find friend youre life

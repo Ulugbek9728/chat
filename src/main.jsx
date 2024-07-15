@@ -12,6 +12,7 @@ import Chat from "@/Components/chat/chat.jsx";
 import {ToastContainer} from "react-toastify";
 import "react-toastify/dist/ReactToastify.css"
 import Login from "@/Components/login/login.jsx";
+import AdminAll from "@/admin/adminAll.jsx";
 
 
 
@@ -32,6 +33,11 @@ const router=createBrowserRouter([
         path: "login_chat_admin",
         element: <Login/>,
     },
+    {
+        path: "adminG-lam",
+        element: <AdminAll/>,
+    },
+
 
 
 ])
