@@ -1,3 +1,12 @@
 .ant-layout-sider{
   width: 5000px!important;
 }
+.ant-modal{
+  width: 60% !important;
+  overflow:hidden;
+  .ant-modal-content{
+    height: 55vh!important;
+
+
+  }
+}

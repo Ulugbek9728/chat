@@ -10,7 +10,7 @@ function Loading({onCancel}) {
 
     setTimeout(() => {
         setLoadingText(true)
-    }, 60000)
+    }, 5000)
 
     return (
         <div className='mt-32'>
@@ -21,7 +21,7 @@ function Loading({onCancel}) {
             {
                 loadingText ? <div className="flex flex-col mt-20 ">
                     <p className="px-8 text-center">Поиск может занять много времени, поскольку нет пользователей, соответствующих запросу.</p>
-                    <button className="text-lg text-white Partner px-9 py-2.5 my-20 mx-auto"
+                    <button className="text-lg text-white Partner bg-bluee px-9 py-2.5 my-20 mx-auto"
                             onClick={()=>{
                                 onCancel();
                                 navigate("/")

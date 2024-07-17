@@ -34,7 +34,7 @@ const router=createBrowserRouter([
         element: <Login/>,
     },
     {
-        path: "adminG-lam",
+        path: "adminG-lam/*",
         element: <AdminAll/>,
     },
 
@@ -45,7 +45,6 @@ const router=createBrowserRouter([
 ReactDOM.createRoot(document.getElementById('root')).render(
   <React.StrictMode>
       <ToastContainer/>
-
       <RouterProvider router={router}/>
   </React.StrictMode>,
 )

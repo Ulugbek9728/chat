@@ -1,5 +1,5 @@
 import "./main1.scss"
-import {style} from "../../utils/style.js";
+import {style} from "@/utils/style.js";
 import {useNavigate} from "react-router-dom";
 
 import {Flex, Radio} from 'antd';

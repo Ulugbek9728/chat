@@ -83,11 +83,11 @@ function Chat() {
     useEffect(() => {
         if (stompClient?.current !== null && localStorage.getItem('currentChat') === null) sendSearchChat();
     }, [stompClient?.current]);
-    useEffect(()=>{
+    useEffect(() => {
         setTimeout(() => {
             setIsPartnerTyping(false);
         }, 3000)
-    },[isPartnerTyping])
+    }, [isPartnerTyping])
 
     function sendSearchChat() {
         const chatFilter = localStorage.getItem('ChatFilter');
@@ -233,7 +233,8 @@ function Chat() {
         <div>
             <div className='bg-gray-400 dark:bg-slate-600 chat'>
                 <div className="bg-gray-100 h-screen flex flex-col max-w-2xl mx-auto drop-shadow-2xl overflow-y-hidden">
-                    <div style={{backgroundColor:"#f65130"}} className=" p-4 text-white flex justify-between items-center">
+                    <div style={{backgroundColor: "#f65130"}}
+                         className=" p-4 text-white flex justify-between items-center">
                         <DarkMode/>
                         <span>Chat anonim</span>
                         {
@@ -248,10 +249,11 @@ function Chat() {
                     </div>
                     {
                         loading ? <Loading onCancel={() => {
+                                stompClient?.current.send('/app/chat/cancel', {Authorization: `Bearer ${fulInfo?.token}`},'');
                                 stompClient?.current && stompClient?.current?.disconnect((msg) => {
-                                    console.log(msg)
                                 }, {Authorization: `Bearer ${fulInfo?.token}`});
-                            }}/> :
+                            }}
+                            /> :
                             <div>
                                 <div className="flex-1 overflow-y-auto p-4 pb-32" style={{height: "84vh"}}>
                                     <div className="flex flex-col space-y-2 h-full ">
