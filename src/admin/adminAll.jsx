@@ -2,23 +2,19 @@ import { useState } from 'react';
 import {
     MenuFoldOutlined,
     MenuUnfoldOutlined,
-    LineChartOutlined,
-    WechatOutlined,
-    UsergroupDeleteOutlined,
 } from '@ant-design/icons';
-import { Button, Layout, Menu, theme } from 'antd';
+import { Button, Layout, theme } from 'antd';
 const { Header, Sider, Content } = Layout;
 
 
 import "./admin.scss"
-import {Route, Routes, useNavigate} from "react-router";
+import {Route, Routes} from "react-router";
 import AllChats from "@/admin/AllChats.jsx";
 import BlockUsers from "@/admin/BlockUsers.jsx";
 import AllStatistika from "@/admin/AllStatistika.jsx";
 import {Link} from "react-router-dom";
 function AdminAll() {
     const [collapsed, setCollapsed] = useState(false);
-    const navigate = useNavigate();
 
     const {
         token: { colorBgContainer, borderRadiusLG },
@@ -29,32 +25,6 @@ function AdminAll() {
             <Layout>
                 <Sider trigger={null} collapsible collapsed={collapsed}>
                     <div className="demo-logo-vertical" />
-                    {/*<Menu*/}
-                    {/*    theme="light" mode="inline"*/}
-                    {/*    defaultSelectedKeys={['1']}*/}
-                    {/*    onClick={(into)=>{*/}
-                    {/*        if (into.key === "1"){ navigate("/adminG-lam/");}*/}
-                    {/*        if (into.key === "2"){ navigate("/adminG-lam/blockuser");}*/}
-                    {/*        if (into.key === "3"){ navigate("/adminG-lam/statistics");}*/}
-                    {/*    }}*/}
-                    {/*    items={[*/}
-                    {/*        {*/}
-                    {/*            key: '1',*/}
-                    {/*            icon: <WechatOutlined />,*/}
-                    {/*            label: 'Barcha suxbatlar',*/}
-                    {/*        },*/}
-                    {/*        {*/}
-                    {/*            key: '2',*/}
-                    {/*            icon: <UsergroupDeleteOutlined />,*/}
-                    {/*            label: 'Bloklangan userlar',*/}
-                    {/*        },*/}
-                    {/*        {*/}
-                    {/*            key: '3',*/}
-                    {/*            icon: <LineChartOutlined />,*/}
-                    {/*            label: 'Umumiy statistika',*/}
-                    {/*        },*/}
-                    {/*    ]}*/}
-                    {/*/>*/}
                     <aside id="separator-sidebar" className=" w-55 h-screen transition-transform -translate-x-full sm:translate-x-0" aria-label="Sidebar">
                         <div className="h-full px-3 py-4 overflow-y-auto bg-gray-50 dark:bg-gray-800">
                             <ul className="space-y-2 font-medium">
@@ -73,7 +43,7 @@ function AdminAll() {
                                         <svg className="flex-shrink-0 w-5 h-5 text-gray-500 transition duration-75 dark:text-gray-400 group-hover:text-gray-900 dark:group-hover:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 20 18">
                                             <path d="M14 2a3.963 3.963 0 0 0-1.4.267 6.439 6.439 0 0 1-1.331 6.638A4 4 0 1 0 14 2Zm1 9h-1.264A6.957 6.957 0 0 1 15 15v2a2.97 2.97 0 0 1-.184 1H19a1 1 0 0 0 1-1v-1a5.006 5.006 0 0 0-5-5ZM6.5 9a4.5 4.5 0 1 0 0-9 4.5 4.5 0 0 0 0 9ZM8 10H5a5.006 5.006 0 0 0-5 5v2a1 1 0 0 0 1 1h11a1 1 0 0 0 1-1v-2a5.006 5.006 0 0 0-5-5Z"/>
                                         </svg>
-                                        {collapsed? '' : <span className="flex-1 ms-3 whitespace-nowrap">Bloklangan Useerlar</span>}
+                                        {collapsed? '' : <span className="flex-1 ms-3 whitespace-nowrap">Bloklangan Userlar</span>}
 
                                     </Link>
                                 </li>

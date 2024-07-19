@@ -1,4 +1,4 @@
-import {Space, Table, Modal,Alert, Flex, Spin, Input } from 'antd';
+import {Space, Table, Modal,Alert, Flex, Spin, Input,message, Popconfirm } from 'antd';
 import axios from "axios";
 import {domen} from "../domen.jsx"
 import {useEffect, useState} from "react";
@@ -9,12 +9,6 @@ const { Search } = Input;
 
 const {Column, ColumnGroup} = Table;
 
-const contentStyle = {
-    padding: 50,
-    background: 'rgba(0, 0, 0, 0.05)',
-    borderRadius: 4,
-};
-const content = <div style={contentStyle} />;
 
 function AllChats() {
     const [tableParams, setTableParams] = useState({
@@ -32,11 +26,9 @@ function AllChats() {
     const [src, setSrc] = useState(null)
 
     useEffect(() => {
-
         return () => {
             GetALLChat(tableParams.pagination.current, tableParams.pagination.pageSize, src)
         }
-
     }, []);
 
     function GetALLChat(page, size,query) {
@@ -77,9 +69,25 @@ function AllChats() {
             console.log(error)
         })
     };
+
+    const confirm = (e) => {
+        axios.put(`${domen}/user/update-status`,{
+            userId:e,
+            status:'BLOCKED'
+        },{
+            headers: {"Authorization": "Bearer " + fulInfoAdmin?.token},
+        }).then(()=>{
+            message.success('Foydalanuvchi bloklandi');
+        }).catch((error)=>{
+            console.log(error)
+            message.error('erorr blok')
+        })
+    };
+
+
     return (
         <div>
-            <Modal title="Basic Modal"
+            <Modal title="All messages"
                    open={isModalOpen}
                    onOk={()=>setIsModalOpen(false)}
                    onCancel={()=>setIsModalOpen(false)}>
@@ -94,6 +102,7 @@ function AllChats() {
                         </Spin>
                     </Flex>:
                         <div className="h-96 overflow-y-auto">
+
                             {messages?.map(item => {
                                 const oneMessage = messages[0].senderId;
                                 return (
@@ -102,17 +111,38 @@ function AllChats() {
                                             oneMessage=== item?.senderId ?
                                                 <div className="flex justify-end mt-1"
                                                      key={item?.messageId}>
-                                                    <div
-                                                        className="bg-blue-200 text-black p-2 rounded-tl-2xl rounded-bl-2xl rounded-tr-2xl max-w-xs">
-                                                        {item?.content}
-                                                    </div>
+                                                    <Popconfirm
+                                                        title="Bloklash"
+                                                        description="Ushbu foydalanuvchini bloklamoqchimisiz?"
+                                                        onConfirm={()=>confirm(oneMessage)}
+                                                        okText="Ha"
+                                                        cancelText="Yo'q"
+                                                    >
+                                                        <div className="flex">
+
+                                                            <div className="bg-bluee text-white p-2 rounded-tl-2xl rounded-bl-2xl rounded-tr-2xl max-w-xs cursor-pointer">
+                                                                {item?.content}
+                                                            </div>
+                                                        </div>
+
+                                                    </Popconfirm>
+
+
                                                 </div>
                                                 :
                                                 <div className="flex mt-1" key={item?.messageId}>
-                                                    <div
-                                                        className="bg-gray-300 text-black p-2 rounded-tl-2xl rounded-br-2xl rounded-tr-2xl max-w-xs">
-                                                        {item?.content}
-                                                    </div>
+                                                    <Popconfirm
+                                                        title="Delete the task"
+                                                        description="Ushbu foydalanuvchini bloklamoqchimisiz?"
+                                                        onConfirm={()=>confirm(item?.senderId)}
+                                                        okText="Ha"
+                                                        cancelText="Yo'q"
+                                                    >
+                                                        <div className="bg-amber text-white p-2 rounded-tl-2xl rounded-br-2xl rounded-tr-2xl max-w-xs cursor-pointer">
+                                                            {item?.content}
+                                                        </div>
+                                                    </Popconfirm>
+
                                                 </div>
                                         }
                                     </div>
@@ -134,10 +164,12 @@ function AllChats() {
                     return {
                         ...item,
                         key: item?.chatId,
-                        user1age: JSON.parse(item?.members)[0].age,
-                        user1Gender: JSON.parse(item?.members)[0].gender,
+                        user1age: JSON.parse(item?.members)[0]?.age,
+                        user1Gender: JSON.parse(item?.members)[0]?.gender,
+                        user1Id: JSON.parse(item?.members)[0]?.userId,
                         user2age: JSON.parse(item?.members)[1]?.age,
                         user2Gender: JSON.parse(item?.members)[1]?.gender,
+                        user2Id: JSON.parse(item?.members)[1]?.userId,
                         LastMesage: JSON.parse(item?.lastMessage)?.content,
                     }
                 })}
@@ -153,10 +185,12 @@ function AllChats() {
                 <ColumnGroup title="User 1">
                     <Column title="Gender" dataIndex="user1Gender" key="user1Gender"/>
                     <Column title="Age" dataIndex="user1age" key="user1age"/>
+                    <Column title="User ID" dataIndex="user1Id" key="user1Id"/>
                 </ColumnGroup>
                 <ColumnGroup title="User 2">
                     <Column title="Gender" dataIndex="user2Gender" key="user2Gender"/>
                     <Column title="Age" dataIndex="user2age" key="user2age"/>
+                    <Column title="User ID" dataIndex="user2Id" key="user2Id"/>
                 </ColumnGroup>
 
                 <Column title="Last Chat" key="address"
@@ -171,14 +205,7 @@ function AllChats() {
                             </Space>
                         )}
                 />
-                <Column title="Statusi" key="createdDate"
-                        render={(record) => (
-
-                            <Space size="middle">
-                                <a> {record.status}</a>
-                            </Space>
-                        )}
-                />
+                <Column title="Statusi" key="createdDate" dataIndex='status'/>
 
             </Table>
         </div>
