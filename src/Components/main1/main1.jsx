@@ -1,7 +1,7 @@
 import "./main1.scss"
 import {style} from "@/utils/style.js";
 import {useNavigate} from "react-router-dom";
-
+import {useTranslation} from "react-i18next";
 import {Flex, Radio} from 'antd';
 import axios from "axios";
 import {domen} from "../../domen.jsx"
@@ -12,6 +12,8 @@ import {toast} from "react-toastify";
 
 function Main1() {
     const navigate = useNavigate();
+    const {t} = useTranslation();
+
     const [fulInfo] = useState(JSON.parse(localStorage.getItem("user")));
     const [ChatFilter] = useState(JSON.parse(localStorage.getItem("ChatFilter")));
     const [filtrUser, setFiltrUser] = useState({
@@ -23,27 +25,27 @@ function Main1() {
     })
     const [srcUserAge, setSrcUserAge] = useState([
             {
-                age: "до 17 лет",
+                age: `TO_17`,
                 value: "TO_17",
                 type: '',
             },
             {
-                age: "от 18 до 21 года",
+                age: `FROM_18_TO_22`,
                 value: "FROM_18_TO_22",
                 type: '',
             },
             {
-                age: "от 22 до 25 года",
+                age: `FROM_22_TO_25`,
                 value: "FROM_22_TO_25",
                 type: "",
             },
             {
-                age: "от 26 до 35 года",
+                age: `FROM_26_TO_35`,
                 value: "FROM_26_TO_35",
                 type: "",
             },
             {
-                age: "старше 36 лет",
+                age: `FROM_36`,
                 value: "FROM_36",
                 type: "",
             }
@@ -202,7 +204,7 @@ function Main1() {
                                                                               className={`bg-bluee mt-2 rounded-lg w-full text-white h-11 pt-1.5`}
                                                                               value={item.value}
                                                                 >
-                                                                    {item?.age}
+                                                                    {t(`Home.${item.age}`)}
                                                                 </Radio.Button>
                                                             )
                                                         }
@@ -225,7 +227,7 @@ function Main1() {
                                                      text-sm`}
                                                     onClick={() => srcAge("ACTIVE", item.age)}
                                                 >
-                                                    {item?.age}
+                                                    {t(`Home.${item.age}`)}
                                                 </button>
                                             )
                                         }

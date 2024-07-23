@@ -11,7 +11,14 @@
     "PhoneNumberCheck":"Phone number must be entered !!!",
     "ApplicationNumber":"Application number",
     "ApplicationNumberCheck":"Application number must be entered !!!",
-    "CheckButton":"Check"
-
+    "CheckButton":"Check",
+    "TO_17": "To 17",
+    "FROM_18_TO_22": "From 18 to 22",
+    "FROM_22_TO_25": "From 22 to 25",
+    "FROM_26_TO_35": "From 26 to 35",
+    "FROM_36": "From 36",
+    "MALE": "MALE",
+    "FEMALE": "FEMALE",
+    "DOES_NOT_HAVE": "DOES NOT HAVE"
   }
 }

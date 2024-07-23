@@ -19,14 +19,11 @@ function App() {
     const [UserActive, setUserActive] = useState(false)
 
 
-
     useEffect(()=>{
         return()=>{
             if (fulInfo!==null){
-                console.log(123)
                 axios.get(`${domen}/user/is-valid`,
                     {headers: {"Authorization": `Bearer ${fulInfo?.token}`}}).then((response) => {
-                    console.log(response.data);
                     setUserActive(response.data.isUserBlocked)
                 }).catch((error) => {
                     console.log(error)
@@ -37,7 +34,6 @@ function App() {
         }
 
     },[])
-
 
     return (
         <div className={`App bg-blue-50 dark:bg-slate-500 relative`}>
