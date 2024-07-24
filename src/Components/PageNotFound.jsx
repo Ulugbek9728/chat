@@ -6,8 +6,8 @@ function PageNotFound() {
     return (
         <div>
             <Navbar/>
-            <div style={{height:"81vh"}} className=" bg-blue-50 pt-20">
-                <img style={{width:'30%'}} className='mx-auto' src={img} alt=""/>
+            <div style={{height:"82vh"}} className=" w-full bg-blue-50 pt-20">
+                <img className='mx-auto w-96' src={img} alt=""/>
             </div>
             <Footer/>
         </div>

@@ -124,17 +124,18 @@ function Main1() {
     return (
         <div className='main mt-8'>
             <div className={`${style.container}`}>
-                <div className="grid grid-cols-2 gap-5 xl:gap-16 pb-40">
-                    <div className=''>
-                        <p className='text-bluee text-4xl font-bold uppercase'>
+                <div className="grid grid-cols-1 lg:grid-cols-2 gap-5 xl:gap-16 pb-40">
+                    <div className='p-3'>
+                        <p className={`text-bluee text-2xl md:text-4xl font-bold uppercase`}>
                             find friend youre life
                         </p>
-                        <div className=" dark:bg-primary w-full bg-blue-50 rounded-3xl shadow-lg shadow-bluee  mt-10 p-5">
+                        <div
+                            className=" dark:bg-primary w-full bg-blue-50 rounded-3xl shadow-lg shadow-bluee  mt-10 p-5">
                             <div className="flex gap-2">
                                 <DarkMode/>
                             </div>
 
-                            <div className="grid grid-cols-2 gap-4 mt-3">
+                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mt-3">
                                 <div className="w-full">
                                     <p className='text-black'>Ваш пол:</p>
                                     <Flex vertical gap="middle">
@@ -150,10 +151,12 @@ function Main1() {
 
                                             <Radio.Button className='bg-bluee text-white h-full w-24 pt-1.5'
                                                           value="DOES_NOT_HAVE">Некто</Radio.Button>
-                                            <Radio.Button className='bg-bluee text-white h-full w-20 pt-1.5'
-                                                          value="MALE">M</Radio.Button>
-                                            <Radio.Button className='bg-bluee text-white h-full w-20 pt-1.5'
-                                                          value="FEMALE ">Ж</Radio.Button>
+                                            <Radio.Button
+                                                className='bg-bluee text-white h-full w-16 md:w-16 xl:w-20 pt-1.5'
+                                                value="MALE">M</Radio.Button>
+                                            <Radio.Button
+                                                className='bg-bluee text-white h-full w-16 md:w-16 xl:w-20 pt-1.5'
+                                                value="FEMALE ">Ж</Radio.Button>
                                         </Radio.Group>
                                     </Flex>
                                 </div>
@@ -171,21 +174,20 @@ function Main1() {
                                             <Radio.Button className='bg-bluee text-white h-full w-24 pt-1.5'
                                                           value="DOES_NOT_HAVE">Не важно</Radio.Button>
                                             <Radio.Button disabled={disablet}
-                                                          className={`bg-bluee text-white h-full w-20 pt-1.5`}
+                                                          className={`bg-bluee text-white h-full w-16 md:w-16 xl:w-20 pt-1.5`}
                                                           value="MALE">M</Radio.Button>
                                             <Radio.Button disabled={disablet}
-                                                          className='bg-bluee text-white h-full w-20 pt-1.5'
+                                                          className='bg-bluee text-white h-full w-16 md:w-16 xl:w-20 pt-1.5'
                                                           value="FEMALE ">Ж</Radio.Button>
                                         </Radio.Group>
                                     </Flex>
                                 </div>
                             </div>
-                            <div className="grid grid-cols-2 gap-4 mt-3">
+                            <div className="grid grid-cols-1 2sm:grid-cols-2 gap-4 mt-3">
                                 {
                                     disablet ? '' : <div className="flex flex-col gap-2">
 
                                         <p className='text-black'>Ваш возраст:</p>
-
 
                                         <Flex gap="middle">
                                             <Radio.Group
@@ -200,9 +202,8 @@ function Main1() {
                                                 {
                                                     srcUserAge.map((item, index) => {
                                                             return (
-                                                                <Radio.Button key={index}
+                                                                <Radio.Button key={index} value={item.value}
                                                                               className={`bg-bluee mt-2 rounded-lg w-full text-white h-11 pt-1.5`}
-                                                                              value={item.value}
                                                                 >
                                                                     {t(`Home.${item.age}`)}
                                                                 </Radio.Button>
@@ -223,10 +224,8 @@ function Main1() {
                                             srcUserAge.map((item, index) =>
                                                 <button
                                                     key={index}
-                                                    className={`border border-white bg-bluee rounded-lg mt-0.4 w-full text-white h-11  ${item.type}
-                                                     text-sm`}
-                                                    onClick={() => srcAge("ACTIVE", item.age)}
-                                                >
+                                                    className={`border border-white bg-bluee rounded-lg mt-0.4 w-full text-white h-11 ${item.type} text-sm`}
+                                                    onClick={() => srcAge("ACTIVE", item.age)}>
                                                     {t(`Home.${item.age}`)}
                                                 </button>
                                             )
@@ -237,7 +236,9 @@ function Main1() {
                             </div>
                             <div className="flex justify-center">
                                 <button className='text-lg text-white bg-bluee Partner mt-10 mb-5 px-9 py-2.5 my-20'
-                                        onClick={() => {chatNow()}}>
+                                        onClick={() => {
+                                            chatNow()
+                                        }}>
                                     Начать чат
                                 </button>
 
@@ -245,7 +246,7 @@ function Main1() {
 
                         </div>
                     </div>
-                    <img className="aim mt-32" src="./img/aim1.png" alt=""/>
+                    <img className="aim mt-32 hidden lg:block" src="./img/aim1.png" alt=""/>
                 </div>
 
             </div>

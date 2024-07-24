@@ -289,7 +289,7 @@ function Chat() {
                                 {
                                     !tugatishBtn &&
                                     <div className=" absolute bottom-8 w-full">
-                                        <p className='text-center text-black'>Собеседник завершил чат:</p>
+                                        <p className='text-center text-black'>Завершил чат:</p>
                                         <div className="flex gap-5  justify-center w-full">
                                             <button className='bg-blue-500 text-white px-5 py-2.5 min-w-60 rounded-2xl'
                                                     onClick={() => {

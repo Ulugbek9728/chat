@@ -13,34 +13,35 @@ import {domen} from "./domen.jsx"
 import UserBlock from "@/Components/userBlock.jsx";
 
 
-
 function App() {
     const [fulInfo] = useState(JSON.parse(localStorage.getItem("user")));
     const [UserActive, setUserActive] = useState(false)
+    const [loading, setLoading] = useState(false)
 
 
-    useEffect(()=>{
-        return()=>{
-            if (fulInfo!==null){
+    useEffect(() => {
+        return () => {
+            setLoading(true)
+            if (fulInfo !== null) {
                 axios.get(`${domen}/user/is-valid`,
                     {headers: {"Authorization": `Bearer ${fulInfo?.token}`}}).then((response) => {
                     setUserActive(response.data.isUserBlocked)
+                    setLoading(false)
                 }).catch((error) => {
                     console.log(error)
+                    setLoading(false)
                 });
             }
-
-
         }
 
-    },[])
+    }, [])
 
     return (
         <div className={`App bg-blue-50 dark:bg-slate-500 relative`}>
             <Navbar/>
-            {
-                UserActive ? <UserBlock/>:<Main1/>
-            }
+
+            {UserActive ? <UserBlock/> : <Main1/>}
+
             {/*<Main2/>*/}
             {/*<Main3/>*/}
             {/*<Main4/>*/}
