@@ -9,7 +9,7 @@ function Navbar() {
             <div className={`${style.container} flex flex-wrap justify-between items-center mx-auto px-5`}>
                 <NavLink to="/" className="flex items-center space-x-3 rtl:space-x-reverse">
                     <img src="./logo.png" className="h-14" alt="Flowbite Logo"/>
-                    <span className={`${style.font} self-center font-semibold whitespace-nowrap text-white`}>Logo name</span>
+                    <span className={`${style.font} self-center font-semibold whitespace-nowrap text-white`}>G-lam</span>
                 </NavLink>
                 <div className="flex items-center space-x-6 rtl:space-x-reverse">
                     <LanguageSwitcher/>

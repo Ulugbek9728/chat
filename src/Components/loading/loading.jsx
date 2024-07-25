@@ -23,8 +23,9 @@ function Loading({onCancel}) {
                     <p className="px-8 text-center">Поиск может занять много времени, поскольку нет пользователей, соответствующих запросу.</p>
                     <button className="text-lg text-white Partner bg-bluee px-9 py-2.5 my-20 mx-auto"
                             onClick={()=>{
-                                onCancel();
                                 navigate("/")
+                                onCancel();
+
                             }}
                     >
                         Остановить поиск

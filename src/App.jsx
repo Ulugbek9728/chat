@@ -2,10 +2,6 @@ import "./App.scss"
 
 import Navbar from "./Components/navbar/navbar.jsx";
 import Main1 from "./Components/main1/main1.jsx";
-import Main2 from "./Components/main2/main2.jsx";
-import Main3 from "./Components/main3/main3.jsx";
-// import Main4 from "./Components/main4/main4.jsx";
-// import Main5 from "./Components/main5/main5.jsx";
 import Footer from "./Components/footer/footer.jsx";
 import {useEffect, useState} from "react";
 import axios from "axios";
@@ -20,20 +16,17 @@ function App() {
 
 
     useEffect(() => {
-        return () => {
-            setLoading(true)
-            if (fulInfo !== null) {
-                axios.get(`${domen}/user/is-valid`,
-                    {headers: {"Authorization": `Bearer ${fulInfo?.token}`}}).then((response) => {
-                    setUserActive(response.data.isUserBlocked)
-                    setLoading(false)
-                }).catch((error) => {
-                    console.log(error)
-                    setLoading(false)
-                });
-            }
+        setLoading(true)
+        if (fulInfo !== null) {
+            axios.get(`${domen}/user/is-valid`,
+                {headers: {"Authorization": `Bearer ${fulInfo?.token}`}}).then((response) => {
+                setUserActive(response.data.isUserBlocked)
+                setLoading(false)
+            }).catch((error) => {
+                console.log(error)
+                setLoading(false)
+            });
         }
-
     }, [])
 
     return (
@@ -42,11 +35,7 @@ function App() {
 
             {UserActive ? <UserBlock/> : <Main1/>}
 
-            {/*<Main2/>*/}
-            {/*<Main3/>*/}
-            {/*<Main4/>*/}
-            {/*<Main5/>*/}
-            {/*<video src=""></video>*/}
+
             <Footer/>
         </div>
     )

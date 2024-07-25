@@ -66,7 +66,6 @@ function Main1() {
             ))
     }
 
-
     function chatNow() {
         localStorage.removeItem("currentChat")
         const userAgeSrc = srcUserAge.filter((item) => item.type === "ACTIVE").map(item => item.value)
@@ -74,7 +73,8 @@ function Main1() {
             ...filtrUser,
             partnerAges: filtrUser.gender === 'Некто' ? {} : userAgeSrc
         }
-        if (fulInfo === null) {
+        if (fulInfo === null && userAllFilter.age!==undefined && userAllFilter.gender!==undefined && userAllFilter.partnerGender!==undefined) {
+
             axios.post(`${domen}/api/v1/auth/register`, userAllFilter).then((res) => {
                 localStorage.setItem("user", JSON.stringify(res.data.user));
                 localStorage.setItem("ChatFilter", JSON.stringify(userAllFilter))
@@ -84,7 +84,10 @@ function Main1() {
                 setMessage(error.message)
             })
         } else {
+            console.log(userAllFilter)
+            console.log(filtrUser)
             navigate("/chat")
+
             localStorage.setItem("ChatFilter", JSON.stringify(userAllFilter))
 
         }

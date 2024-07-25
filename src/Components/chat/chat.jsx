@@ -25,7 +25,7 @@ function Chat() {
     const [isChatActive, setIsChatActive] = useState(false)
 
     const [message, setMessage] = useState('')
-    const [loading, setLoading] = useState(false)
+    const [loading, setLoading] = useState(true)
     const [tugatishBtn, setTugatishBtn] = useState(false)
     const stompClient = useRef(null);
 
@@ -79,7 +79,6 @@ function Chat() {
             }
         }
     }, []);
-
     useEffect(() => {
         if (stompClient?.current !== null && localStorage.getItem('currentChat') === null) sendSearchChat();
     }, [stompClient?.current]);
@@ -301,8 +300,7 @@ function Chat() {
                                             <button
                                                 className="bg-emerald-600 text-white px-5 py-2.5  min-w-60 rounded-2xl"
                                                 onClick={() => newChat()}
-                                            >Начать
-                                                новый чат
+                                            >Начать новый чат
                                             </button>
                                         </div>
                                     </div>
