@@ -45,7 +45,7 @@ function DarkMode() {
         <div className='bg-bluee rounded-lg '>
             {
                 options?.map(opt=>(
-                    <button key={opt.text} className={`w-8 h-8 mx-3 leading-9 text-xl rounded-full m-1 text-white ${
+                    <button key={opt.text} className={`w-8  h-8 mx-1  2sm:mx-3 2sm:m-1 leading-9 text-xl rounded-full  text-white ${
                         theme===opt.text && "text-yellow-500"}`}
                             onClick={()=>setTheme(opt.text)}
                     >

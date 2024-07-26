@@ -26,7 +26,14 @@ module.exports = {
     extend: {
       colors: {
         bluee:'#075985',
+        darkBlue:'#0b2735',
+        darkBlue2:'#0e3143',
+        darkBlue3:'rgba(14,49,67,0.92)',
+        darkLoading:'#FFFFFF33',
+        lightLoading:'#0000001F',
         amber:'#f65130',
+        lightChatUser1:"#f1f7ff",
+        lightChatUser2:"#4629f2",
         border: "hsl(var(--border))",
         input: "hsl(var(--input))",
         ring: "hsl(var(--ring))",

@@ -42,6 +42,9 @@ const router=createBrowserRouter([
 ReactDOM.createRoot(document.getElementById('root')).render(
   <React.StrictMode>
       <ToastContainer/>
-      <RouterProvider router={router}/>
+      <div className="bg-white">
+          <RouterProvider router={router}/>
+
+      </div>
   </React.StrictMode>,
 )

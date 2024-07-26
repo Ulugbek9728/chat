@@ -129,18 +129,18 @@ function Main1() {
             <div className={`${style.container}`}>
                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-5 xl:gap-16 pb-40">
                     <div className='p-3'>
-                        <p className={`text-bluee text-2xl md:text-4xl font-bold uppercase`}>
+                        <p className={`text-bluee dark:text-white text-2xl md:text-4xl font-bold uppercase`}>
                             find friend youre life
                         </p>
                         <div
-                            className=" dark:bg-primary w-full bg-blue-50 rounded-3xl shadow-lg shadow-bluee  mt-10 p-5">
+                            className=" dark:bg-darkBlue2 w-full bg-blue-50 rounded-3xl shadow-lg shadow-bluee  mt-10 p-5">
                             <div className="flex gap-2">
                                 <DarkMode/>
                             </div>
 
                             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mt-3">
                                 <div className="w-full">
-                                    <p className='text-black'>Ваш пол:</p>
+                                    <p className='text-black dark:text-white'>Ваш пол:</p>
                                     <Flex vertical gap="middle">
                                         <Radio.Group buttonStyle="solid" className='h-11'
                                                      value={filtrUser.gender}
@@ -164,9 +164,9 @@ function Main1() {
                                     </Flex>
                                 </div>
                                 <div className="w-full">
-                                    <p className='text-black'>Пол собеседника:</p>
+                                    <p className='text-black dark:text-white'>Пол собеседника:</p>
                                     <Flex vertical gap="middle">
-                                        <Radio.Group buttonStyle="solid" className='h-11'
+                                        <Radio.Group buttonStyle="solid" className='h-11 dark:border-white'
                                                      value={filtrUser.partnerGender}
                                                      onChange={(e) => {
                                                          setFiltrUser({
@@ -190,10 +190,10 @@ function Main1() {
                                 {
                                     disablet ? '' : <div className="flex flex-col gap-2">
 
-                                        <p className='text-black'>Ваш возраст:</p>
+                                        <p className='text-black dark:text-white'>Ваш возраст:</p>
 
                                         <Flex gap="middle">
-                                            <Radio.Group
+                                            <Radio.Group className=''
                                                 buttonStyle="solid"
                                                 onChange={(e) => {
                                                     setFiltrUser({...filtrUser, age: e.target.value})
@@ -205,9 +205,8 @@ function Main1() {
                                                 {
                                                     srcUserAge.map((item, index) => {
                                                             return (
-                                                                <Radio.Button key={index} value={item.value}
-                                                                              className={`bg-bluee mt-2 rounded-lg w-full text-white h-11 pt-1.5`}
-                                                                >
+                                                                <Radio.Button className={`bg-bluee mt-2 rounded-lg w-full text-white h-11 pt-1.5`}
+                                                                              key={index} value={item.value}>
                                                                     {t(`Home.${item.age}`)}
                                                                 </Radio.Button>
                                                             )
@@ -221,13 +220,13 @@ function Main1() {
                                 }
                                 {
                                     disablet ? '' : <div className="flex flex-col gap-2">
-                                        <p className='mb-1.5 text-black'>Возраст собеседника:</p>
+                                        <p className='mb-1.5 text-black dark:text-white'>Возраст собеседника:</p>
 
                                         {
                                             srcUserAge.map((item, index) =>
                                                 <button
                                                     key={index}
-                                                    className={`border border-white bg-bluee rounded-lg mt-0.4 w-full text-white h-11 ${item.type} text-sm`}
+                                                    className={`border bg-bluee rounded-lg mt-0.4 w-full text-white h-11 ${item.type} text-sm`}
                                                     onClick={() => srcAge("ACTIVE", item.age)}>
                                                     {t(`Home.${item.age}`)}
                                                 </button>
@@ -249,7 +248,7 @@ function Main1() {
 
                         </div>
                     </div>
-                    <img className="aim mt-32 hidden lg:block" src="./img/aim1.png" alt=""/>
+                    <img className="aim mt-32 hidden lg:block" src="./img/aim2.svg" alt=""/>
                 </div>
 
             </div>

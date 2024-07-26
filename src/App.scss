@@ -11,21 +11,22 @@
     }
   }
   .ant-radio-button-wrapper{
-    border-color: inherit!important;
     background: #075985!important;
-    //background: #019ae1!important;
+    border: none;
+    color: white!important;
+    overflow: hidden;
 
-    &:hover{
-      color: white!important;
-      background-color: #f65130;
-    }
 
   }
   .ant-radio-button-checked{
     background-color: #f65130;
 
+
     &:hover{
       color: white!important;
     }
+  }
+  .ant-radio-button{
+
   }
 }

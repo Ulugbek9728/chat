@@ -191,10 +191,7 @@ function Chat() {
     }
 
     const content = (
-        <Picker data={data}
-                className="bg-white"
-                theme="auto"
-                previewPosition="none"
+        <Picker data={data} className="bg-white" theme="auto" previewPosition="none"
                 onEmojiSelect={(emoji) => {
                     setMessage(prevState => prevState + emoji.native)
                 }}
@@ -230,14 +227,14 @@ function Chat() {
 
     return (
         <div>
-            <div className='bg-gray-400 dark:bg-slate-600 chat'>
-                <div className="bg-gray-100 h-screen flex flex-col max-w-2xl mx-auto drop-shadow-2xl overflow-y-hidden">
-                    <div style={{backgroundColor: "#f65130"}}
-                         className=" p-4 text-white flex justify-between items-center">
+            <div className='bg-blue-50 dark:bg-darkBlue3 chat'>
+                <div className="bg-white dark:bg-darkBlue2 h-screen flex flex-col max-w-2xl mx-auto drop-shadow-2xl overflow-y-hidden">
+                    <div
+                         className=" bg-amber p-4 text-white flex justify-between items-center">
                         <DarkMode/>
                         <span>Chat anonim</span>
                         {
-                            tugatishBtn ? <button id="login" className="bg-sky-800 rounded-md px-2 py-1"
+                            tugatishBtn ? <button id="login" className="bg-sky-800 rounded-md px-1  2sm:px-2 py-1"
                                                   onClick={() => {
                                                       finishChat();
                                                   }}
@@ -248,13 +245,13 @@ function Chat() {
                     </div>
                     {
                         loading ? <Loading onCancel={() => {
-                                stompClient?.current.send('/app/chat/cancel', {Authorization: `Bearer ${fulInfo?.token}`},'');
+                                stompClient?.current.send('/app/chat/cancel', {Authorization: `Bearer ${fulInfo?.token}`}, '');
                                 stompClient?.current && stompClient?.current?.disconnect((msg) => {
                                 }, {Authorization: `Bearer ${fulInfo?.token}`});
                             }}
                             /> :
                             <div>
-                                <div className="flex-1 overflow-y-auto p-4 pb-32" style={{height: "84vh"}}>
+                                <div className=" flex-1 overflow-y-auto p-4 pb-32" style={{height: "84vh"}}>
                                     <div className="flex flex-col space-y-2 h-full ">
                                         {isPartnerTyping && <Typeng userName={"Yozmoqda"}/>}
                                         {messages?.map(item => {
@@ -266,14 +263,14 @@ function Chat() {
                                                             <div className="flex justify-end"
                                                                  key={item?.message?.messageId}>
                                                                 <div
-                                                                    className="bg-blue-200 text-black p-2 rounded-tl-2xl rounded-bl-2xl rounded-tr-2xl max-w-xs">
+                                                                    className="bg-lightChatUser2 text-white p-2 px-5 rounded-tl-2xl rounded-bl-2xl rounded-tr-2xl max-w-xs">
                                                                     {oneMessage?.content}
                                                                 </div>
                                                             </div>
                                                             :
                                                             <div className="flex" key={item?.message?.messageId}>
                                                                 <div
-                                                                    className="bg-gray-300 text-black p-2 rounded-tl-2xl rounded-br-2xl rounded-tr-2xl max-w-xs">
+                                                                    className="bg-lightChatUser1 text-black p-2 px-5 rounded-tl-2xl rounded-br-2xl rounded-tr-2xl max-w-xs">
                                                                     {oneMessage?.content}
                                                                 </div>
                                                             </div>
@@ -288,17 +285,18 @@ function Chat() {
                                 {
                                     !tugatishBtn &&
                                     <div className=" absolute bottom-8 w-full">
-                                        <p className='text-center text-black'>Завершил чат:</p>
-                                        <div className="flex gap-5  justify-center w-full">
-                                            <button className='bg-blue-500 text-white px-5 py-2.5 min-w-60 rounded-2xl'
-                                                    onClick={() => {
-                                                        localStorage.removeItem('currentChat')
-                                                        navigate('/')
-                                                    }}>
+                                        <p className='text-center text-black mb-3'>Завершил чат:</p>
+                                        <div className="flex gap-3 3sm:gap-5  justify-center w-full">
+                                            <button
+                                                className='bg-blue-500 text-white px-2 3sm:px-5 py-2.5 min-w-30 sm:min-w-60 rounded-2xl'
+                                                onClick={() => {
+                                                    localStorage.removeItem('currentChat')
+                                                    navigate('/')
+                                                }}>
                                                 Изменить параметры
                                             </button>
                                             <button
-                                                className="bg-emerald-600 text-white px-5 py-2.5  min-w-60 rounded-2xl"
+                                                className="bg-emerald-600 text-white px-2 3sm:px-5 py-2.5  min-w-30 sm:min-w-60 rounded-2xl"
                                                 onClick={() => newChat()}
                                             >Начать новый чат
                                             </button>
@@ -307,48 +305,47 @@ function Chat() {
                                 }
 
                                 <div
-                                    className={`bg-white p-4 flex items-center absolute bottom-0 w-full  ${!isChatActive ? 'hidden' : ''}`}>
-                                    <Popover theme="dark" placement="topLeft" content={content} trigger="click">
-                                        <SmileTwoTone className="w-10 h-auto stiker"/>
-                                    </Popover>
+                                    className={`bg-white p-2 2sm:p-4  absolute bottom-0 w-full  ${!isChatActive ? 'hidden' : ''}`}>
+                                    <div className="relative  flex items-center justify-between">
+                                        <Popover className='absolute z-10 left-1 top-1' theme="dark" placement="topLeft"
+                                                 content={content} trigger="click">
+                                            <SmileTwoTone className="w-10 h-auto stiker"/>
+                                        </Popover>
 
-                                    <Form name="basic" className='w-full'
-                                          layout={"inline"}
-                                          initialValues={{remember: true,}}
-                                          onFinish={sendMessage}
-                                    >
-                                        <Form.Item>
-                                            <input type="text" placeholder="Type your message..."
+                                        <Form name="basic" layout={"inline"} className="w-full " initialValues={{remember: true,}}
+                                              onFinish={sendMessage}>
+                                            <Form.Item className='input '>
+                                                <input type="text" placeholder="Type your message..."
+                                                       className="w-full flex-1 border rounded-full text-blue-900 px-4 py-2 focus:outline-none"
+                                                       onChange={(e) => {
+                                                           setMessage(e.target.value);
+                                                           sendChatAction('TYPING');
+                                                       }}
+                                                       value={message}
+                                                />
+                                            </Form.Item>
 
-                                                   className="flex-1 border rounded-full text-blue-900 px-4 py-2 focus:outline-none"
-                                                   onChange={(e) => {
-                                                       setMessage(e.target.value);
-                                                       sendChatAction('TYPING');
-                                                   }}
-                                                   value={message}
-                                            />
-                                        </Form.Item>
+                                            <Form.Item className='button  m-0'>
+                                                <button onClick={() => sendMessage()}
+                                                        className=" bg-blue-500 text-white rounded-full p-2 hover:bg-blue-600 focus:outline-none"
+                                                >
+                                                    <svg width="20px" height="20px" viewBox="0 0 24 24" fill="none"
+                                                         xmlns="http://www.w3.org/2000/svg" stroke="#ffffff">
+                                                        <g id="SVGRepo_bgCarrier" strokeWidth="0"></g>
+                                                        <g id="SVGRepo_tracerCarrier" strokeLinecap="round"
+                                                           strokeLinejoin="round"></g>
+                                                        <g id="SVGRepo_iconCarrier">
+                                                            <path
+                                                                d="M11.5003 12H5.41872M5.24634 12.7972L4.24158 15.7986C3.69128 17.4424 3.41613 18.2643 3.61359 18.7704C3.78506 19.21 4.15335 19.5432 4.6078 19.6701C5.13111 19.8161 5.92151 19.4604 7.50231 18.7491L17.6367 14.1886C19.1797 13.4942 19.9512 13.1471 20.1896 12.6648C20.3968 12.2458 20.3968 11.7541 20.1896 11.3351C19.9512 10.8529 19.1797 10.5057 17.6367 9.81135L7.48483 5.24303C5.90879 4.53382 5.12078 4.17921 4.59799 4.32468C4.14397 4.45101 3.77572 4.78336 3.60365 5.22209C3.40551 5.72728 3.67772 6.54741 4.22215 8.18767L5.24829 11.2793C5.34179 11.561 5.38855 11.7019 5.407 11.8459C5.42338 11.9738 5.42321 12.1032 5.40651 12.231C5.38768 12.375 5.34057 12.5157 5.24634 12.7972Z"
+                                                                stroke="#ffffff" strokeWidth="2" strokeLinecap="round"
+                                                                strokeLinejoin="round"></path>
+                                                        </g>
+                                                    </svg>
+                                                </button>
+                                            </Form.Item>
+                                        </Form>
+                                    </div>
 
-                                        <Form.Item>
-                                            {/* eslint-disable-next-line react/no-unknown-property */}
-                                            <button onClick={() => sendMessage()}
-                                                    className="bg-blue-500 text-white rounded-full p-2 ml-1 hover:bg-blue-600 focus:outline-none"
-                                            >
-                                                <svg width="20px" height="20px" viewBox="0 0 24 24" fill="none"
-                                                     xmlns="http://www.w3.org/2000/svg" stroke="#ffffff">
-                                                    <g id="SVGRepo_bgCarrier" strokeWidth="0"></g>
-                                                    <g id="SVGRepo_tracerCarrier" strokeLinecap="round"
-                                                       strokeLinejoin="round"></g>
-                                                    <g id="SVGRepo_iconCarrier">
-                                                        <path
-                                                            d="M11.5003 12H5.41872M5.24634 12.7972L4.24158 15.7986C3.69128 17.4424 3.41613 18.2643 3.61359 18.7704C3.78506 19.21 4.15335 19.5432 4.6078 19.6701C5.13111 19.8161 5.92151 19.4604 7.50231 18.7491L17.6367 14.1886C19.1797 13.4942 19.9512 13.1471 20.1896 12.6648C20.3968 12.2458 20.3968 11.7541 20.1896 11.3351C19.9512 10.8529 19.1797 10.5057 17.6367 9.81135L7.48483 5.24303C5.90879 4.53382 5.12078 4.17921 4.59799 4.32468C4.14397 4.45101 3.77572 4.78336 3.60365 5.22209C3.40551 5.72728 3.67772 6.54741 4.22215 8.18767L5.24829 11.2793C5.34179 11.561 5.38855 11.7019 5.407 11.8459C5.42338 11.9738 5.42321 12.1032 5.40651 12.231C5.38768 12.375 5.34057 12.5157 5.24634 12.7972Z"
-                                                            stroke="#ffffff" strokeWidth="2" strokeLinecap="round"
-                                                            strokeLinejoin="round"></path>
-                                                    </g>
-                                                </svg>
-                                            </button>
-                                        </Form.Item>
-                                    </Form>
                                 </div>
                             </div>
                     }

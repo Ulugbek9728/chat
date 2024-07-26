@@ -1,18 +1,49 @@
-.chat{
+.chat {
   width: 100%;
-  background-image: url("../../img/bgchat.png");
+  background-image: url("../../img/bgchat2.svg");
   background-repeat: no-repeat;
-  background-size: 100% 100vh;
+  background-size: 100% ;
 
-  .stiker{
-    svg{
+  .stiker {
+    svg {
       width: 30px !important;
       height: auto;
     }
   }
-  input{
-    width: 530px;
 
+  .input {
+    width: 92%;
+    margin-right: 10px;
+
+    input {
+      padding-left: 45px;
+    }
   }
 
+  .button {
+    width: 6%;
+    margin: 0 !important;
+
+    button {
+      margin: 0;
+    }
+  }
+
+}
+
+@media (max-width: 672px) {
+  .chat {
+    .input {
+      width: 83vw;
+    }
+  }
+}
+@media (max-width: 356px) {
+  .chat {
+    .input {
+      width: 80vw;
+      margin-right: 5px;
+
+    }
+  }
 }

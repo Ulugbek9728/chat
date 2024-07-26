@@ -30,7 +30,7 @@ function App() {
     }, [])
 
     return (
-        <div className={`App bg-blue-50 dark:bg-slate-500 relative`}>
+        <div className={`App  dark:bg-darkBlue bg-blue-50 relative`}>
             <Navbar/>
 
             {UserActive ? <UserBlock/> : <Main1/>}
