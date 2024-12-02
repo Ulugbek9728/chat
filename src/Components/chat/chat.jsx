@@ -13,10 +13,12 @@ import Loading from "@/Components/loading/loading.jsx";
 import {domen} from "../../domen.jsx"
 import Typeng from "@/Components/typengChat/typeng.jsx";
 import {Form} from 'antd';
+import {useTranslation} from "react-i18next";
 
 
 function Chat() {
     const [fulInfo] = useState(JSON.parse(localStorage.getItem("user")));
+    const {t} = useTranslation();
 
     const navigate = useNavigate();
 
@@ -232,21 +234,23 @@ function Chat() {
                     <div
                          className=" bg-amber p-4 text-white flex justify-between items-center">
                         <DarkMode/>
-                        <span>Chat anonim</span>
+                        <span>{t("loding.Chat_Anonim")}</span>
                         {
-                            tugatishBtn ? <button id="login" className="bg-sky-800 rounded-md px-1  2sm:px-2 py-1"
+                            tugatishBtn ?
+                                <button id="login" className="bg-sky-800 rounded-md px-1  2sm:px-2 py-1"
                                                   onClick={() => {
                                                       finishChat();
                                                   }}
                             >
-                                Завершить чат
-                            </button> : <div/>
+                                    {t("chat.End_chat")}
+                            </button> :
+                                <div></div>
                         }
                     </div>
                     {
                         loading ? <Loading onCancel={() => {
                                 stompClient?.current.send('/app/chat/cancel', {Authorization: `Bearer ${fulInfo?.token}`}, '');
-                                stompClient?.current && stompClient?.current?.disconnect((msg) => {
+                                stompClient?.current && stompClient?.current?.disconnect(() => {
                                 }, {Authorization: `Bearer ${fulInfo?.token}`});
                             }}
                             /> :
@@ -285,7 +289,7 @@ function Chat() {
                                 {
                                     !tugatishBtn &&
                                     <div className=" absolute bottom-8 w-full">
-                                        <p className='text-center text-black mb-3'>Завершил чат:</p>
+                                        <p className='text-center text-black mb-3'>{t("chat.Ended_chat")}:</p>
                                         <div className="flex gap-3 3sm:gap-5  justify-center w-full">
                                             <button
                                                 className='bg-blue-500 text-white px-2 3sm:px-5 py-2.5 min-w-30 sm:min-w-60 rounded-2xl'
@@ -293,12 +297,12 @@ function Chat() {
                                                     localStorage.removeItem('currentChat')
                                                     navigate('/')
                                                 }}>
-                                                Изменить параметры
+                                                {t("chat.Change_settings")}
                                             </button>
                                             <button
                                                 className="bg-emerald-600 text-white px-2 3sm:px-5 py-2.5  min-w-30 sm:min-w-60 rounded-2xl"
                                                 onClick={() => newChat()}
-                                            >Начать новый чат
+                                            >{t("chat.Start_new_chat")}
                                             </button>
                                         </div>
                                     </div>

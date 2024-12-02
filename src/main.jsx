@@ -11,9 +11,6 @@ import "react-toastify/dist/ReactToastify.css"
 import Login from "@/Components/login/login.jsx";
 import AdminAll from "@/admin/adminAll.jsx";
 
-
-
-
 const router=createBrowserRouter([
     {
         path: "/",
@@ -44,7 +41,6 @@ ReactDOM.createRoot(document.getElementById('root')).render(
       <ToastContainer/>
       <div className="bg-white">
           <RouterProvider router={router}/>
-
       </div>
   </React.StrictMode>,
 )

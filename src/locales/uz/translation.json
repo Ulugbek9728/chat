@@ -1,24 +1,41 @@
 {
   "Home": {
-    "logo1": "Islom Karimov nomidagi Toshkent Davlat Texnika Universiteti",
-    "DepartmentName":"Islom Karimov nomidagi Toshkent Davlat Texnika Universiteti Registrator bo‘limi platformasi",
-    "Departmenttext":"Akademik faoliyat va registrator bo‘limi universitetning asosiy xizmatlarini talabalarga bir joydan turib tezkor, samarali va shaffof tarzda amalga oshiradi.",
-    "EnterPage":"Sahifaga kirish",
-    "CheckApplication":"Murojat holatini tekshirish",
-    "ViewApplication":"Murojat holatini ko'rish",
-    "ViewApplicationText":"Mazkur xizmat orqali Siz telefon raqam va ariza raqmingizni kiritib, Registrator bo'limiga qoldirgan murojatingiz holati haqida ma’lumot olasiz.",
-    "PhoneNumber":"Telefon raqam",
-    "PhoneNumberCheck":"Telefon raqam kiritilishi shart !!!",
-    "ApplicationNumber":"Ariza raqam",
-    "ApplicationNumberCheck":"Ariza raqam kiritilishi shart !!!",
-    "CheckButton":"Tekshirish",
+    "FIND_FRIEND_YOUR_LIFE": "hayotingizda do'st toping",
+    "Your_gender": "Sizning jinsingiz",
+    "Gender_of_the_interlocutor": "Suhbatdoshingizni jinsi",
+    "Nobody": "Maxfiy",
+    "Nobody2": "Axamiyatsiz",
+    "GenderMale": "E",
+    "GenderFmale": "A",
+    "Your_age": "Sizning yoshingiz",
+    "Age_of_the_interlocutor": "Suhbatdoshingizni yoshi",
     "TO_17": "17 yoshgacha",
     "FROM_18_TO_22": "18 yoshdan 21 yoshgacha",
     "FROM_22_TO_25": "12 yoshdan 25 yoshgacha",
     "FROM_26_TO_35": "26 yoshdan 35 yoshgacha",
     "FROM_36": "36 yoshdan katta",
-    "MALE": "ERKAK",
-    "FEMALE": "AYOL",
-    "DOES_NOT_HAVE": "HECHKIM"
+    "Start_chat": "Suhbatni boshlash"
+  },
+  "loding": {
+    "lodingText": "Bo'sh suhbatdosh qidirilmoqda",
+    "Chat_Anonim": "Anonim suhbat",
+    "StopChat": "Qidiruv uzoq vaqt talab qilishi mumkin, chunki so'rovingizga mos keladigan foydalanuvchilar yo'q.",
+    "StopButton": "Qidiruvni to'xtatish"
+  },
+  "chat": {
+    "End_chat": "Suhbatni tugatish",
+    "Ended_chat": "Suhbat  tugatildi",
+    "Change_settings": "Sozlamalarni o'zgartirish",
+    "Start_new_chat": "Yangi suhbatni boshlash"
+
+  },
+  "login": {
+    "title": "Bizning G-lam jamoamiz",
+    "login": "login",
+    "login_Message": "Login kiritilishda xatolik",
+    "password": "parol",
+    "password_Message": "Parol kiritilishda xatolik",
+    "button": "Kirish",
+    "footerText": "Barcha huquqlar G-lam tomonidan himoyalangan"
   }
 }

@@ -12,19 +12,15 @@ import UserBlock from "@/Components/userBlock.jsx";
 function App() {
     const [fulInfo] = useState(JSON.parse(localStorage.getItem("user")));
     const [UserActive, setUserActive] = useState(false)
-    const [loading, setLoading] = useState(false)
 
 
     useEffect(() => {
-        setLoading(true)
         if (fulInfo !== null) {
             axios.get(`${domen}/user/is-valid`,
                 {headers: {"Authorization": `Bearer ${fulInfo?.token}`}}).then((response) => {
                 setUserActive(response.data.isUserBlocked)
-                setLoading(false)
             }).catch((error) => {
                 console.log(error)
-                setLoading(false)
             });
         }
     }, [])

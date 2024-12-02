@@ -8,13 +8,14 @@ import {Form,Button, Input} from 'antd';
 import {domen} from "../../domen.jsx"
 import {toast} from "react-toastify";
 import {useNavigate} from "react-router-dom";
+import {useTranslation} from "react-i18next";
 
 
 
 
 function Login() {
     const navigate = useNavigate();
-
+    const {t} = useTranslation();
     const formRef = useRef(null);
     const [message, setMessage] = useState('');
     const [sucsessText, setSucsessText] = useState('');
@@ -61,7 +62,7 @@ function Login() {
                                      src="./logo.png"
                                      alt="logo"/>
                                 <h4 className="mb-12 pb-1 text-xl font-semibold">
-                                    We are G-lam Team
+                                    {t("login.title")}
                                 </h4>
                             </div>
                             <Form
@@ -82,7 +83,7 @@ function Login() {
                                     rules={[
                                         {
                                             required: true,
-                                            message: 'Login kiritilishda xatolik',
+                                            message: `${t("login.login_Message")}`,
                                             min: 1
                                         }
                                     ]}
@@ -90,7 +91,7 @@ function Login() {
                                     <div className="all-input">
                                         <Input
                                             type="text"
-                                            placeholder="Login"
+                                            placeholder={`${t("login.login")}`}
                                             name="ism"
                                         >
                                         </Input>
@@ -101,22 +102,21 @@ function Login() {
                                     rules={[
                                         {
                                             required: true,
-                                            message: 'Parol kiritilishda xatolik',
+                                            message: `${t("login.password_Message")}`,
                                             min: 1
                                         }
                                     ]}
                                 >
                                     <div className="all-input">
-                                        <Input type={ "password"} placeholder='password' name="Parol"/>
+                                        <Input type={ "password"} placeholder={`${t("login.password")}`} name="Parol"/>
                                     </div>
                                 </Form.Item>
                                 <Form.Item>
                                     <Button htmlType="submit"
                                         style={{background: "linear-gradient(to right, #ee7724, #d8363a, #dd3675, #b44593)"}}
-                                        className="shadow w-full
-                                                             focus:shadow-outline focus:outline-none text-white font-bold py-2 px-4 rounded"
+                                        className="shadow w-full focus:shadow-outline focus:outline-none text-white font-bold py-2 px-4 rounded"
                                         type="button">
-                                        Sign Up
+                                        {t("login.button")}
                                     </Button>
                                 </Form.Item>
                             </Form>

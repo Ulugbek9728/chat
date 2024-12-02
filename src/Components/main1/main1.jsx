@@ -73,8 +73,7 @@ function Main1() {
             ...filtrUser,
             partnerAges: filtrUser.gender === 'Некто' ? {} : userAgeSrc
         }
-        if (fulInfo === null && userAllFilter.age!==undefined && userAllFilter.gender!==undefined && userAllFilter.partnerGender!==undefined) {
-
+        if (fulInfo === null && userAllFilter.age !== undefined && userAllFilter.gender !== undefined && userAllFilter.partnerGender !== undefined) {
             axios.post(`${domen}/api/v1/auth/register`, userAllFilter).then((res) => {
                 localStorage.setItem("user", JSON.stringify(res.data.user));
                 localStorage.setItem("ChatFilter", JSON.stringify(userAllFilter))
@@ -84,12 +83,8 @@ function Main1() {
                 setMessage(error.message)
             })
         } else {
-            console.log(userAllFilter)
-            console.log(filtrUser)
             navigate("/chat")
-
             localStorage.setItem("ChatFilter", JSON.stringify(userAllFilter))
-
         }
     }
 
@@ -130,7 +125,7 @@ function Main1() {
                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-5 xl:gap-16 pb-40">
                     <div className='p-3'>
                         <p className={`text-bluee dark:text-white text-2xl md:text-4xl font-bold uppercase`}>
-                            find friend youre life
+                            {t("Home.FIND_FRIEND_YOUR_LIFE")}
                         </p>
                         <div
                             className=" dark:bg-darkBlue2 w-full bg-blue-50 rounded-3xl shadow-lg shadow-bluee  mt-10 p-5">
@@ -140,7 +135,7 @@ function Main1() {
 
                             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mt-3">
                                 <div className="w-full">
-                                    <p className='text-black dark:text-white'>Ваш пол:</p>
+                                    <p className='text-black dark:text-white'>{t("Home.Your_gender")}:</p>
                                     <Flex vertical gap="middle">
                                         <Radio.Group buttonStyle="solid" className='h-11'
                                                      value={filtrUser.gender}
@@ -153,18 +148,18 @@ function Main1() {
                                                      }}>
 
                                             <Radio.Button className='bg-bluee text-white h-full w-24 pt-1.5'
-                                                          value="DOES_NOT_HAVE">Некто</Radio.Button>
+                                                          value="DOES_NOT_HAVE">{t("Home.Nobody")}</Radio.Button>
                                             <Radio.Button
-                                                className='bg-bluee text-white h-full w-16 md:w-16 xl:w-20 pt-1.5'
-                                                value="MALE">M</Radio.Button>
+                                                className='m_f'
+                                                value="MALE">{t("Home.GenderMale")}</Radio.Button>
                                             <Radio.Button
-                                                className='bg-bluee text-white h-full w-16 md:w-16 xl:w-20 pt-1.5'
-                                                value="FEMALE ">Ж</Radio.Button>
+                                                className='m_f'
+                                                value="FEMALE ">{t("Home.GenderFmale")}</Radio.Button>
                                         </Radio.Group>
                                     </Flex>
                                 </div>
                                 <div className="w-full">
-                                    <p className='text-black dark:text-white'>Пол собеседника:</p>
+                                    <p className='text-black dark:text-white'>{t("Home.Gender_of_the_interlocutor")}:</p>
                                     <Flex vertical gap="middle">
                                         <Radio.Group buttonStyle="solid" className='h-11 dark:border-white'
                                                      value={filtrUser.partnerGender}
@@ -175,13 +170,13 @@ function Main1() {
                                                          })
                                                      }}>
                                             <Radio.Button className='bg-bluee text-white h-full w-24 pt-1.5'
-                                                          value="DOES_NOT_HAVE">Не важно</Radio.Button>
+                                                          value="DOES_NOT_HAVE">{t("Home.Nobody2")}</Radio.Button>
                                             <Radio.Button disabled={disablet}
-                                                          className={`bg-bluee text-white h-full w-16 md:w-16 xl:w-20 pt-1.5`}
-                                                          value="MALE">M</Radio.Button>
+                                                          className="m_f"
+                                                          value="MALE">{t("Home.GenderMale")}</Radio.Button>
                                             <Radio.Button disabled={disablet}
-                                                          className='bg-bluee text-white h-full w-16 md:w-16 xl:w-20 pt-1.5'
-                                                          value="FEMALE ">Ж</Radio.Button>
+                                                          className='m_f'
+                                                          value="FEMALE ">{t("Home.GenderFmale")}</Radio.Button>
                                         </Radio.Group>
                                     </Flex>
                                 </div>
@@ -190,23 +185,24 @@ function Main1() {
                                 {
                                     disablet ? '' : <div className="flex flex-col gap-2">
 
-                                        <p className='text-black dark:text-white'>Ваш возраст:</p>
+                                        <p className='text-black dark:text-white'>{t("Home.Your_age")}:</p>
 
                                         <Flex gap="middle">
                                             <Radio.Group className=''
-                                                buttonStyle="solid"
-                                                onChange={(e) => {
-                                                    setFiltrUser({...filtrUser, age: e.target.value})
-                                                }}
-                                                style={{cursor: disablet ? 'not-allowed' : ''}}
-                                                disabled={disablet}
-                                                value={filtrUser.age}
+                                                         buttonStyle="solid"
+                                                         onChange={(e) => {
+                                                             setFiltrUser({...filtrUser, age: e.target.value})
+                                                         }}
+                                                         style={{cursor: disablet ? 'not-allowed' : ''}}
+                                                         disabled={disablet}
+                                                         value={filtrUser.age}
                                             >
                                                 {
                                                     srcUserAge.map((item, index) => {
                                                             return (
-                                                                <Radio.Button className={`bg-bluee mt-2 rounded-lg w-full text-white h-11 pt-1.5`}
-                                                                              key={index} value={item.value}>
+                                                                <Radio.Button
+                                                                    className={`bg-bluee mt-2 rounded-lg w-full text-white h-11 pt-1.5`}
+                                                                    key={index} value={item.value}>
                                                                     {t(`Home.${item.age}`)}
                                                                 </Radio.Button>
                                                             )
@@ -220,7 +216,7 @@ function Main1() {
                                 }
                                 {
                                     disablet ? '' : <div className="flex flex-col gap-2">
-                                        <p className='mb-1.5 text-black dark:text-white'>Возраст собеседника:</p>
+                                        <p className='mb-1.5 text-black dark:text-white'>{t("Home.Age_of_the_interlocutor")}:</p>
 
                                         {
                                             srcUserAge.map((item, index) =>
@@ -238,10 +234,8 @@ function Main1() {
                             </div>
                             <div className="flex justify-center">
                                 <button className='text-lg text-white bg-bluee Partner mt-10 mb-5 px-9 py-2.5 my-20'
-                                        onClick={() => {
-                                            chatNow()
-                                        }}>
-                                    Начать чат
+                                        onClick={() => {chatNow()}}>
+                                    {t("Home.Start_chat")}
                                 </button>
 
                             </div>

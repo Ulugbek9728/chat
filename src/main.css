@@ -73,4 +73,7 @@
     body {
       @apply bg-background text-foreground;
     }
+    .m_f{
+      @apply bg-bluee text-white h-full w-16 md:w-14 xl:w-20 pt-1.5 pl-8
+    }
   }
