@@ -1,94 +1,176 @@
-import "./chat.scss"
+import "./chat.scss";
 import DarkMode from "@/Components/darkMode/darkMode.jsx";
 import {useNavigate} from "react-router-dom";
-import data from '@emoji-mart/data'
-import Picker from '@emoji-mart/react'
-import {SmileTwoTone} from '@ant-design/icons';
-import {Popover} from 'antd';
+import data from "@emoji-mart/data";
+import Picker from "@emoji-mart/react";
+import {SmileTwoTone} from "@ant-design/icons";
+import {Form, Popover} from "antd";
 import {useEffect, useRef, useState} from "react";
-
-import {Stomp} from '@stomp/stompjs';
-import SockJS from 'sockjs-client'
+import {Stomp} from "@stomp/stompjs";
+import SockJS from "sockjs-client";
 import Loading from "@/Components/loading/loading.jsx";
-import {domen} from "../../domen.jsx"
 import Typeng from "@/Components/typengChat/typeng.jsx";
-import {Form} from 'antd';
 import {useTranslation} from "react-i18next";
-
+import {domen} from "../../domen.jsx";
 
 function Chat() {
-    const [fulInfo] = useState(JSON.parse(localStorage.getItem("user")));
-    const {t} = useTranslation();
-
-    const navigate = useNavigate();
-
-    const [messages, setMessages] = useState([])
-    const [isPartnerTyping, setIsPartnerTyping] = useState(false)
-    const [isChatActive, setIsChatActive] = useState(false)
-
-    const [message, setMessage] = useState('')
-    const [loading, setLoading] = useState(true)
-    const [tugatishBtn, setTugatishBtn] = useState(false)
+    const userInfo = JSON.parse(localStorage.getItem("user"));
+    const currentChat = JSON.parse(localStorage.getItem("currentChat"));
+    const [messages, setMessages] = useState([]);
+    const [isPartnerTyping, setIsPartnerTyping] = useState(false);
+    const [isChatActive, setIsChatActive] = useState(false);
+    const [message, setMessage] = useState("");
+    const [loading, setLoading] = useState(true);
+    const [showEndChatButton, setShowEndChatButton] = useState(false);
+    const [connected, setConnected] = useState(false);
+    /**
+     * @type {SockJS | null}
+     */
     const stompClient = useRef(null);
 
-    const [findChatStompSubscription, setFindChatStompSubscription] = useState(null);
-    const [chatMessageStompSubscription, setChatMessageStompSubscription] = useState(null);
-
-    const [currentChat] = useState(JSON.parse(localStorage.getItem('currentChat')));
+    const navigate = useNavigate();
+    const {t} = useTranslation();
 
     useEffect(() => {
-        if (currentChat?.status === "CLOSED") {
-            localStorage.removeItem('currentChat')
-            navigate('/');
+        if (!userInfo || currentChat?.status === "CLOSED") {
+            localStorage.removeItem("currentChat");
+            navigate("/");
             return;
         }
-        if (fulInfo === null) {
-            navigate('/');
-            return;
+        if (stompClient.current == null) {
+            console.log('stomp null')
+            initializeWebSocket();
         }
-        return async () => {
-            if (stompClient.current === null) {
-                const socket = new SockJS(`${domen}/chat`, null, {
-                    transports: ['websocket'],
-                    withCredentials: true
-                });
-                const client = Stomp.over(socket);
 
-                client.heartbeat.incoming = 4000;
-                client.heartbeat.outgoing = 4000;
-                client.reconnect_delay = 5000;
-
-                await client.connect({'Authorization': `Bearer ${fulInfo?.token}`}, () => {
-                        if (currentChat) {
-                            setChatMessageStompSubscription(client.subscribe(
-                                `/message/chat/${currentChat?.chatId}`,
-                                handleChatMessages,
-                                {Authorization: `Bearer ${fulInfo?.token}`},
-                            ));
-                            setIsChatActive(true)
-                            setLoading(false);
-                            setTugatishBtn(true);
-                            client.send(`/app/message/old-chats/${currentChat?.chatId}`, {Authorization: `Bearer ${fulInfo?.token}`}, '')
-                        } else {
-                            setFindChatStompSubscription(client.subscribe(`/match-chat/${fulInfo?.id}`, handleSearchChat));
-                        }
-                    },
-                    (error) => {
-                        console.log('error', error);
-                    }
-                );
-                stompClient.current = client;
-            }
-        }
+        // return () => stompClient.current?.disconnect();
     }, []);
+
     useEffect(() => {
-        if (stompClient?.current !== null && localStorage.getItem('currentChat') === null) sendSearchChat();
-    }, [stompClient?.current]);
-    useEffect(() => {
-        setTimeout(() => {
-            setIsPartnerTyping(false);
-        }, 3000)
-    }, [isPartnerTyping])
+        if (stompClient?.current && connected) sendSearchChat();
+    }, [stompClient?.current, connected]);
+
+    const initializeWebSocket = () => {
+        /**
+         * @type {SockJS}
+         */
+        const socket = new SockJS(`${domen}/chat`, null, {
+            transports: ["websocket"],
+            withCredentials: true,
+        });
+        /**
+         * @type {CompatClient}
+         */
+        const client = Stomp.over(socket);
+
+        client.heartbeat.incoming = 4000;
+        client.heartbeat.outgoing = 4000;
+        client.reconnect_delay = 5000;
+        client.connect(
+            {Authorization: `Bearer ${userInfo?.token}`},
+            () => onWebSocketConnected(client),
+            (error) => console.error("WebSocket Error:", error)
+        );
+        stompClient.current = client;
+    };
+    /**
+     * @param {CompatClient} client
+     * @param client
+     */
+    const onWebSocketConnected = (client) => {
+        if (currentChat) {
+            subscribeToChat(client, currentChat.chatId);
+            setIsChatActive(true);
+            setLoading(false);
+            setShowEndChatButton(true);
+        } else {
+            console.log(`start match ${userInfo?.id}`)
+            client.subscribe(`/match-chat/${userInfo?.id}`, handleSearchChat, {Authorization: `Bearer ${userInfo?.token}`});
+            setConnected(true);
+        }
+    };
+
+    /**
+     * @param {CompatClient} client
+     * @param client
+     * @param chatId
+     */
+    const subscribeToChat = (client, chatId) => {
+        client.subscribe(
+            `/message/chat/${chatId}`,
+            handleChatMessages,
+            {Authorization: `Bearer ${userInfo?.token}`}
+        );
+        client.send(
+            `/app/message/old-chats/${chatId}`,
+            {Authorization: `Bearer ${userInfo?.token}`}
+        );
+    };
+
+    const handleSearchChat = (msg) => {
+        const message = JSON.parse(msg.body);
+        switch (message?.chat?.status) {
+            case "WAITING_TO_START":
+                setLoading(true);
+                break;
+            case "ACTIVE":
+                localStorage.setItem("currentChat", JSON.stringify(message.chat));
+                subscribeToChat(stompClient.current, message.chat.chatId);
+                setIsChatActive(true);
+                setShowEndChatButton(true);
+                setLoading(false);
+                break;
+            default:
+                console.warn("Unhandled chat status:", message?.chat?.status);
+        }
+    };
+
+    const handleChatMessages = (msg) => {
+        const receivedMessage = JSON.parse(msg.body);
+        console.log(receivedMessage)
+        switch (receivedMessage.action) {
+            case "new.message":
+                setMessages((prevMessages) => [...prevMessages, receivedMessage]);
+                break;
+            case "chat.action":
+                if (receivedMessage?.typedUserId !== userInfo?.id) {
+                    setIsPartnerTyping(true);
+                    setTimeout(() => setIsPartnerTyping(false), 3000);
+                }
+                break;
+            case "chat.change.status":
+                endChatSession();
+                break;
+            case "old.messages":
+                setMessages(receivedMessage?.messages?.map((msg) => ({message: msg})));
+                break;
+            default:
+                console.warn("Unhandled chat message action:", receivedMessage.action);
+        }
+    };
+
+    const sendMessage = () => {
+        if (!message.trim() || !stompClient.current) return;
+
+        const chatMessage = {
+            chatId: currentChat?.chatId,
+            content: message,
+        };
+        console.log(chatMessage)
+        stompClient.current.send(
+            "/app/message/send",
+            {Authorization: `Bearer ${userInfo?.token}`},
+            JSON.stringify(chatMessage)
+        );
+        setMessage("");
+    };
+    function sendChatAction(action) {
+        console.log(currentChat)
+        stompClient?.current && stompClient?.current.send(
+            '/app/chat-action/send',
+            {Authorization: `Bearer ${userInfo?.token}`},
+            JSON.stringify({chatId: currentChat?.chatId, action: action})
+        );
+    }
 
     function sendSearchChat() {
         const chatFilter = localStorage.getItem('ChatFilter');
@@ -104,154 +186,75 @@ function Chat() {
             partnerGender: request.partnerGender,
             partnerAges: request.partnerAges
         };
-        setTugatishBtn(false)
+        setShowEndChatButton(false)
         setLoading(true);
         setIsChatActive(false)
-        stompClient?.current && stompClient?.current?.send(
-            '/app/chat/match',
-            {Authorization: `Bearer ${fulInfo?.token}`},
-            JSON.stringify(body)
+        if (stompClient?.current?.active && connected) {
+            stompClient?.current?.send(
+                '/app/chat/match',
+                {Authorization: `Bearer ${userInfo?.token}`},
+                JSON.stringify(body)
+            );
+        }
+    }
+
+    const endChatSession = () => {
+        setShowEndChatButton(false);
+        setIsChatActive(false);
+        localStorage.setItem(
+            "currentChat",
+            JSON.stringify({...currentChat, status: "CLOSED"})
         );
-    }
+    };
+    const finishChat = () => {
+        if (!isChatActive || stompClient.current == null) return;
 
-    function sendMessage() {
-        if (message.trim()) {
-            if (stompClient?.current !== null) {
-                const chatMessage = {
-                    chatId: JSON.parse(localStorage.getItem('currentChat'))?.chatId,
-                    content: message
-                }
-                stompClient?.current.send(`/app/message/send`, {Authorization: `Bearer ${fulInfo?.token}`}, JSON.stringify(chatMessage));
-                setMessage('');
-            }
-        }
-    }
-
-    function handleSearchChat(msg) {
-        try {
-            const message = JSON.parse(msg?.body);
-            switch (message?.chat?.status) {
-                case 'WAITING_TO_START': {
-                    setLoading(true);
-                    break;
-                }
-                case 'ACTIVE': {
-                    setIsChatActive(true)
-                    setTugatishBtn(true);
-                    setLoading(false)
-                    findChatStompSubscription && findChatStompSubscription.unsubscribe();
-                    localStorage.setItem('currentChat', JSON.stringify(message?.chat));
-                    const subscribe = stompClient?.current.subscribe(
-                        `/message/chat/${message?.chat?.chatId}`,
-                        handleChatMessages,
-                        {Authorization: `Bearer ${fulInfo?.token}`},
-                    );
-                    message?.chat?.chatId && setChatMessageStompSubscription(subscribe);
-                    stompClient.current?.send(`/app/message/old-chats/${message?.chat?.chatId}`, {Authorization: `Bearer ${fulInfo?.token}`}, '')
-
-                    break;
-                }
-            }
-        } catch (e) {
-            console.log(e)
-        }
-    }
-
-    function handleChatMessages(msg) {
-        const receivedMessage = JSON.parse(msg?.body);
-        switch (receivedMessage?.action) {
-            case 'new.message': {
-                setMessages((prevMessages) => [...prevMessages, receivedMessage]);
-                break;
-            }
-            case 'chat.action': {
-                if (receivedMessage?.typedUserId !== fulInfo?.id) {
-                    setIsPartnerTyping(true);
-
-
-                }
-                break;
-            }
-            case 'chat.change.status': {
-                localStorage.setItem('currentChat', JSON.stringify({...currentChat, status: 'CLOSED'}));
-                setTugatishBtn(false);
-                setIsChatActive(false)
-                break;
-            }
-            case "old.messages": {
-                console.log(receivedMessage.messages)
-                setMessages(
-                    receivedMessage?.messages?.map((item) => {
-                        return {
-                            message: item
-                        }
-                    })
-                )
-                break
-            }
-        }
-    }
+        stompClient.current.send(
+            "/app/chat/finish",
+            {Authorization: `Bearer ${userInfo?.token}`},
+            JSON.stringify({chatId: currentChat?.chatId})
+        );
+        endChatSession();
+        stompClient.current.disconnect();
+    };
 
     const content = (
-        <Picker data={data} className="bg-white" theme="auto" previewPosition="none"
-                onEmojiSelect={(emoji) => {
-                    setMessage(prevState => prevState + emoji.native)
-                }}
+        <Picker
+            data={data}
+            theme="auto"
+            previewPosition="none"
+            onEmojiSelect={(emoji) => setMessage((prev) => prev + emoji.native)}
         />
     );
-
-    function sendChatAction(action) {
-        stompClient?.current && stompClient?.current.send(
-            '/app/chat-action/send',
-            {Authorization: `Bearer ${fulInfo?.token}`},
-            JSON.stringify({chatId: JSON.parse(localStorage.getItem('currentChat'))?.chatId, action: action})
-        );
-    }
-
-    function finishChat() {
-        if (isChatActive && chatMessageStompSubscription !== null && stompClient?.current !== null) {
-            stompClient?.current.send('/app/chat/finish', {Authorization: `Bearer ${fulInfo?.token}`}, JSON.stringify({chatId: JSON.parse(localStorage.getItem('currentChat'))?.chatId}));
-            localStorage.setItem('currentChat', JSON.stringify({...currentChat, status: 'CLOSED'}));
-            console.log('finishchat')
-            setIsChatActive(false);
-            setTugatishBtn(false);
-            chatMessageStompSubscription.unsubscribe();
-            stompClient?.current?.disconnect();
-        } else {
-            console.log('finish chat error')
-        }
-    }
-
     function newChat() {
         localStorage.removeItem('currentChat');
         location.reload();
     }
-
     return (
         <div>
             <div className='bg-blue-50 dark:bg-darkBlue3 chat'>
                 <div className="bg-white dark:bg-darkBlue2 h-screen flex flex-col max-w-2xl mx-auto drop-shadow-2xl overflow-y-hidden">
                     <div
-                         className=" bg-amber p-4 text-white flex justify-between items-center">
+                        className=" bg-amber p-4 text-white flex justify-between items-center">
                         <DarkMode/>
                         <span>{t("loding.Chat_Anonim")}</span>
                         {
-                            tugatishBtn ?
+                            showEndChatButton ?
                                 <button id="login" className="bg-sky-800 rounded-md px-1  2sm:px-2 py-1"
-                                                  onClick={() => {
-                                                      finishChat();
-                                                  }}
-                            >
+                                        onClick={() => {
+                                            finishChat();
+                                        }}
+                                >
                                     {t("chat.End_chat")}
-                            </button> :
+                                </button> :
                                 <div></div>
                         }
                     </div>
                     {
                         loading ? <Loading onCancel={() => {
-                                stompClient?.current.send('/app/chat/cancel', {Authorization: `Bearer ${fulInfo?.token}`}, '');
+                                stompClient?.current.send('/app/chat/cancel', {Authorization: `Bearer ${userInfo?.token}`}, '');
                                 stompClient?.current && stompClient?.current?.disconnect(() => {
-                                }, {Authorization: `Bearer ${fulInfo?.token}`});
+                                }, {Authorization: `Bearer ${userInfo?.token}`});
                             }}
                             /> :
                             <div>
@@ -263,7 +266,7 @@ function Chat() {
                                             return (
                                                 <div key={item?.message?.messageId}>
                                                     {
-                                                        oneMessage?.senderId === fulInfo?.id ?
+                                                        oneMessage?.senderId === userInfo?.id ?
                                                             <div className="flex justify-end"
                                                                  key={item?.message?.messageId}>
                                                                 <div
@@ -287,7 +290,7 @@ function Chat() {
                                 </div>
 
                                 {
-                                    !tugatishBtn &&
+                                    !showEndChatButton &&
                                     <div className=" absolute bottom-8 w-full">
                                         <p className='text-center text-black mb-3'>{t("chat.Ended_chat")}:</p>
                                         <div className="flex gap-3 3sm:gap-5  justify-center w-full">
@@ -349,7 +352,6 @@ function Chat() {
                                             </Form.Item>
                                         </Form>
                                     </div>
-
                                 </div>
                             </div>
                     }
