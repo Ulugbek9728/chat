@@ -13,6 +13,7 @@ import Typeng from "@/Components/typengChat/typeng.jsx";
 import {useTranslation} from "react-i18next";
 import {domen} from "../../domen.jsx";
 
+
 function Chat() {
     const userInfo = JSON.parse(localStorage.getItem("user"));
     const currentChat = JSON.parse(localStorage.getItem("currentChat"));
@@ -38,7 +39,6 @@ function Chat() {
             return;
         }
         if (stompClient.current == null) {
-            console.log('stomp null')
             initializeWebSocket();
         }
 
@@ -163,6 +163,7 @@ function Chat() {
         );
         setMessage("");
     };
+
     function sendChatAction(action) {
         console.log(currentChat)
         stompClient?.current && stompClient?.current.send(
@@ -226,21 +227,25 @@ function Chat() {
             onEmojiSelect={(emoji) => setMessage((prev) => prev + emoji.native)}
         />
     );
+
     function newChat() {
         localStorage.removeItem('currentChat');
         location.reload();
     }
+
+
     return (
         <div>
             <div className='bg-blue-50 dark:bg-darkBlue3 chat'>
-                <div className="bg-white dark:bg-darkBlue2 h-screen flex flex-col max-w-2xl mx-auto drop-shadow-2xl overflow-y-hidden">
+                <div
+                    className="bg-white dark:bg-darkBlue2 h-screen flex flex-col max-w-2xl mx-auto drop-shadow-2xl overflow-y-hidden">
                     <div
                         className=" bg-amber p-4 text-white flex justify-between items-center">
                         <DarkMode/>
                         <span>{t("loding.Chat_Anonim")}</span>
                         {
                             showEndChatButton ?
-                                <button id="login" className="bg-sky-800 rounded-md px-1  2sm:px-2 py-1"
+                                <button id="login" className="bg-sky-800 rounded-md px-1 2sm:px-2 py-1"
                                         onClick={() => {
                                             finishChat();
                                         }}
@@ -261,6 +266,7 @@ function Chat() {
                                 <div className=" flex-1 overflow-y-auto p-4 pb-32" style={{height: "84vh"}}>
                                     <div className="flex flex-col space-y-2 h-full ">
                                         {isPartnerTyping && <Typeng userName={"Yozmoqda"}/>}
+
                                         {messages?.map(item => {
                                             const oneMessage = item?.message;
                                             return (
@@ -269,20 +275,22 @@ function Chat() {
                                                         oneMessage?.senderId === userInfo?.id ?
                                                             <div className="flex justify-end"
                                                                  key={item?.message?.messageId}>
-                                                                <div
-                                                                    className="bg-lightChatUser2 text-white p-2 px-5 rounded-tl-2xl rounded-bl-2xl rounded-tr-2xl max-w-xs">
-                                                                    {oneMessage?.content}
+                                                                <div className="break-words bg-bluee text-white p-2 text-right
+                                                                     rounded-tl-2xl rounded-bl-2xl rounded-tr-2xl max-w-xs">
+                                                                    <p className="text-left">{oneMessage?.content}</p>
+                                                                    <span className="text-xs">{oneMessage?.createdDate.slice(11,16)}</span>
                                                                 </div>
                                                             </div>
                                                             :
-                                                            <div className="flex" key={item?.message?.messageId}>
-                                                                <div
-                                                                    className="bg-lightChatUser1 text-black p-2 px-5 rounded-tl-2xl rounded-br-2xl rounded-tr-2xl max-w-xs">
-                                                                    {oneMessage?.content}
+                                                            <div className="flex"
+                                                                 key={item?.message?.messageId}>
+                                                                <div className="break-words bg-blue-200 text-black p-2
+                                                                    rounded-tl-2xl rounded-br-2xl rounded-tr-2xl max-w-xs">
+                                                                    <p>{oneMessage?.content}</p>
+                                                                    <span className="text-xs">{oneMessage?.createdDate.slice(11,16)}</span>
                                                                 </div>
                                                             </div>
                                                     }
-
                                                 </div>
                                             )
                                         })}
@@ -292,7 +300,7 @@ function Chat() {
                                 {
                                     !showEndChatButton &&
                                     <div className=" absolute bottom-8 w-full">
-                                        <p className='text-center text-black mb-3'>{t("chat.Ended_chat")}:</p>
+                                        <p className='text-center text-black mb-3 dark:text-white text-black'>{t("chat.Ended_chat")}:</p>
                                         <div className="flex gap-3 3sm:gap-5  justify-center w-full">
                                             <button
                                                 className='bg-blue-500 text-white px-2 3sm:px-5 py-2.5 min-w-30 sm:min-w-60 rounded-2xl'
@@ -310,7 +318,6 @@ function Chat() {
                                         </div>
                                     </div>
                                 }
-
                                 <div
                                     className={`bg-white p-2 2sm:p-4  absolute bottom-0 w-full  ${!isChatActive ? 'hidden' : ''}`}>
                                     <div className="relative  flex items-center justify-between">
@@ -319,7 +326,8 @@ function Chat() {
                                             <SmileTwoTone className="w-10 h-auto stiker"/>
                                         </Popover>
 
-                                        <Form name="basic" layout={"inline"} className="w-full " initialValues={{remember: true,}}
+                                        <Form name="basic" layout={"inline"} className="w-full "
+                                              initialValues={{remember: true,}}
                                               onFinish={sendMessage}>
                                             <Form.Item className='input '>
                                                 <input type="text" placeholder="Type your message..."
@@ -352,6 +360,7 @@ function Chat() {
                                             </Form.Item>
                                         </Form>
                                     </div>
+
                                 </div>
                             </div>
                     }

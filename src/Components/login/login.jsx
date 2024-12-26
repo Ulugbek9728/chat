@@ -10,9 +10,6 @@ import {toast} from "react-toastify";
 import {useNavigate} from "react-router-dom";
 import {useTranslation} from "react-i18next";
 
-
-
-
 function Login() {
     const navigate = useNavigate();
     const {t} = useTranslation();
