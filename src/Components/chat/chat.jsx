@@ -67,7 +67,10 @@ function Chat() {
         client.reconnect_delay = 5000;
         client.connect(
             {Authorization: `Bearer ${userInfo?.token}`},
-            () => onWebSocketConnected(client),
+            () => {
+                console.log("WebSocket Connected");
+                onWebSocketConnected(client)
+            },
             (error) => console.error("WebSocket Error:", error)
         );
         stompClient.current = client;
@@ -77,6 +80,8 @@ function Chat() {
      * @param client
      */
     const onWebSocketConnected = (client) => {
+        setConnected(true);
+
         if (currentChat) {
             subscribeToChat(client, currentChat.chatId);
             setIsChatActive(true);
@@ -85,7 +90,6 @@ function Chat() {
         } else {
             console.log(`start match ${userInfo?.id}`)
             client.subscribe(`/match-chat/${userInfo?.id}`, handleSearchChat, {Authorization: `Bearer ${userInfo?.token}`});
-            setConnected(true);
         }
     };
 
