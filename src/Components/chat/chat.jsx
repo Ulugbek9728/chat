@@ -6,7 +6,7 @@ import Picker from "@emoji-mart/react";
 import {SmileTwoTone} from "@ant-design/icons";
 import {Form, Popover} from "antd";
 import {useEffect, useRef, useState} from "react";
-import {Stomp} from "@stomp/stompjs";
+import {Stomp } from "@stomp/stompjs";
 import SockJS from "sockjs-client";
 import Loading from "@/Components/loading/loading.jsx";
 import Typeng from "@/Components/typengChat/typeng.jsx";
@@ -24,9 +24,7 @@ function Chat() {
     const [loading, setLoading] = useState(true);
     const [showEndChatButton, setShowEndChatButton] = useState(false);
     const [connected, setConnected] = useState(false);
-    /**
-     * @type {SockJS | null}
-     */
+
     const stompClient = useRef(null);
 
     const navigate = useNavigate();
@@ -36,68 +34,58 @@ function Chat() {
         if (!userInfo || currentChat?.status === "CLOSED") {
             localStorage.removeItem("currentChat");
             navigate("/");
-            return;
-        }
-        if (stompClient.current == null) {
-            initializeWebSocket();
         }
 
-        // return () => stompClient.current?.disconnect();
     }, []);
+    useEffect(() => {
+            if (!stompClient.current) {initializeWebSocket();}
+    },[])
+
 
     useEffect(() => {
         if (stompClient?.current && connected) sendSearchChat();
     }, [stompClient?.current, connected]);
 
     const initializeWebSocket = () => {
-        /**
-         * @type {SockJS}
-         */
-        const socket = new SockJS(`${domen}/chat`, null, {
-            transports: ["websocket"],
-            withCredentials: true,
+        const socket = () => new SockJS(`${domen}/chat`, {
+            transports: ['websocket', 'xhr-streaming', 'xhr-polling']
         });
-        /**
-         * @type {CompatClient}
-         */
         const client = Stomp.over(socket);
 
-        client.heartbeat.incoming = 4000;
-        client.heartbeat.outgoing = 4000;
-        client.reconnect_delay = 5000;
+        client.debug = (msg) => console.log("STOMP LOG:", msg); // Debug loglarni yoqish
+
+        client.heartbeat.incoming = 8000;
+        client.heartbeat.outgoing = 8000;
+        client.reconnectDelay  = 5000;
         client.connect(
-            {Authorization: `Bearer ${userInfo?.token}`},
+
+            {
+                login: userInfo?.token,
+                passcode: "",
+                Authorization: `Bearer ${userInfo?.token}`
+            },
             () => {
                 console.log("WebSocket Connected");
-                onWebSocketConnected(client)
+                onWebSocketConnected(client);
             },
             (error) => console.error("WebSocket Error:", error)
         );
+
         stompClient.current = client;
     };
-    /**
-     * @param {CompatClient} client
-     * @param client
-     */
+
     const onWebSocketConnected = (client) => {
         setConnected(true);
-
         if (currentChat) {
             subscribeToChat(client, currentChat.chatId);
             setIsChatActive(true);
             setLoading(false);
             setShowEndChatButton(true);
         } else {
-            console.log(`start match ${userInfo?.id}`)
             client.subscribe(`/match-chat/${userInfo?.id}`, handleSearchChat, {Authorization: `Bearer ${userInfo?.token}`});
         }
     };
 
-    /**
-     * @param {CompatClient} client
-     * @param client
-     * @param chatId
-     */
     const subscribeToChat = (client, chatId) => {
         client.subscribe(
             `/message/chat/${chatId}`,
@@ -130,7 +118,7 @@ function Chat() {
 
     const handleChatMessages = (msg) => {
         const receivedMessage = JSON.parse(msg.body);
-        console.log(receivedMessage)
+        console.log("receivedMessage "+receivedMessage)
         switch (receivedMessage.action) {
             case "new.message":
                 setMessages((prevMessages) => [...prevMessages, receivedMessage]);

@@ -1,4 +1,5 @@
 import {useEffect, useState} from "react";
+import {SunOutlined, MoonOutlined} from "@ant-design/icons";
 
 
 function DarkMode() {
@@ -8,11 +9,11 @@ function DarkMode() {
 
     const options = [
         {
-            icon: 'sunny-outline',
+            icon: <SunOutlined />,
             text:'light'
         },
         {
-            icon: 'moon-outline',
+            icon: <MoonOutlined />,
             text:'dark'
         },
     ]
@@ -45,11 +46,12 @@ function DarkMode() {
         <div className='bg-bluee rounded-lg '>
             {
                 options?.map(opt=>(
-                    <button key={opt.text} className={`w-8  h-8 mx-1  2sm:mx-3 2sm:m-1 leading-9 text-xl rounded-full  text-white ${
+                    <button key={opt.text} className={`w-8 h-8 mx-1  2sm:mx-3 2sm:m-1 leading-7 text-xl rounded-full  text-white ${
                         theme===opt.text && "text-yellow-500"}`}
+                            style={{outline: "none"}}
                             onClick={()=>setTheme(opt.text)}
                     >
-                        <ion-icon name={opt.icon}/>
+                        {opt.icon}
                     </button>
                 ))
             }
