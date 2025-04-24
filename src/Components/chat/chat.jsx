@@ -6,12 +6,14 @@ import Picker from "@emoji-mart/react";
 import {SmileTwoTone} from "@ant-design/icons";
 import {Form, Popover} from "antd";
 import {useEffect, useRef, useState} from "react";
-import {Stomp } from "@stomp/stompjs";
+// import {Stomp } from "@stomp/stompjs";
 import SockJS from "sockjs-client";
 import Loading from "@/Components/loading/loading.jsx";
 import Typeng from "@/Components/typengChat/typeng.jsx";
 import {useTranslation} from "react-i18next";
 import {domen} from "../../domen.jsx";
+import {Client} from "@stomp/stompjs";
+
 
 
 function Chat() {
@@ -34,45 +36,41 @@ function Chat() {
         if (!userInfo || currentChat?.status === "CLOSED") {
             localStorage.removeItem("currentChat");
             navigate("/");
+            return;
         }
+        if (!stompClient.current) {initializeWebSocket();}
 
     }, []);
-    useEffect(() => {
-            if (!stompClient.current) {initializeWebSocket();}
-    },[])
 
+
+    const initializeWebSocket = () => {
+        const socket = () => new SockJS(`${domen}/chat`);
+        const client = new Client({
+            webSocketFactory: socket,
+            reconnectDelay: 5000, // avtomatik reconnect harakatlari
+            heartbeatIncoming: 8000,
+            heartbeatOutgoing: 8000,
+            debug: (str) => console.log("📡 STOMP DEBUG:", str),
+        });
+
+        client.onConnect = () => {
+            console.log("✅ WebSocket Connected!");
+            onWebSocketConnected(client);
+        };
+
+        client.onStompError = (frame) => {
+            console.error("❌ STOMP Error:", frame.headers['message']);
+            console.error("Details:", frame.body);
+        };
+
+        client.activate(); // Ulanishni boshlash
+
+        return client; // kerak bo‘lsa tashqaridan ham clientga murojaat qilsa bo‘ladi
+    };
 
     useEffect(() => {
         if (stompClient?.current && connected) sendSearchChat();
     }, [stompClient?.current, connected]);
-
-    const initializeWebSocket = () => {
-        const socket = () => new SockJS(`${domen}/chat`, {
-            transports: ['websocket', 'xhr-streaming', 'xhr-polling']
-        });
-        const client = Stomp.over(socket);
-
-        client.debug = (msg) => console.log("STOMP LOG:", msg); // Debug loglarni yoqish
-
-        client.heartbeat.incoming = 8000;
-        client.heartbeat.outgoing = 8000;
-        client.reconnectDelay  = 5000;
-        client.connect(
-
-            {
-                login: userInfo?.token,
-                passcode: "",
-                Authorization: `Bearer ${userInfo?.token}`
-            },
-            () => {
-                console.log("WebSocket Connected");
-                onWebSocketConnected(client);
-            },
-            (error) => console.error("WebSocket Error:", error)
-        );
-
-        stompClient.current = client;
-    };
 
     const onWebSocketConnected = (client) => {
         setConnected(true);
@@ -82,7 +80,9 @@ function Chat() {
             setLoading(false);
             setShowEndChatButton(true);
         } else {
-            client.subscribe(`/match-chat/${userInfo?.id}`, handleSearchChat, {Authorization: `Bearer ${userInfo?.token}`});
+            client.subscribe(`/match-chat/${userInfo?.id}`, handleSearchChat, {
+                Authorization: `Bearer ${userInfo?.token}`
+            });
         }
     };
 
@@ -225,7 +225,6 @@ function Chat() {
         location.reload();
     }
 
-
     return (
         <div>
             <div className='bg-blue-50 dark:bg-darkBlue3 chat'>
@@ -235,16 +234,14 @@ function Chat() {
                         className=" bg-amber p-4 text-white flex justify-between items-center">
                         <DarkMode/>
                         <span>{t("loding.Chat_Anonim")}</span>
-                        {
-                            showEndChatButton ?
+                        {showEndChatButton ?
                                 <button id="login" className="bg-sky-800 rounded-md px-1 2sm:px-2 py-1"
                                         onClick={() => {
                                             finishChat();
-                                        }}
-                                >
+                                        }}>
                                     {t("chat.End_chat")}
                                 </button> :
-                                <div></div>
+                                <div/>
                         }
                     </div>
                     {
