@@ -6,9 +6,9 @@ import Footer from "./Components/footer/footer.jsx";
 import {useEffect, useState} from "react";
 import axios from "axios";
 import {domen} from "./domen.jsx"
-import UserBlock from "@/Components/userBlock.jsx";
+import UserBlock from "./Components/userBlock.jsx";
 import {useNavigate} from "react-router-dom";
-import Test from "@/test.jsx";
+// import Test from "./test.jsx";
 
 
 function App() {
@@ -17,31 +17,32 @@ function App() {
     const navigate = useNavigate();
 
 
-    // useEffect(() => {
-    //     if (fulInfo !== null) {
-    //         axios.get(`${domen}/user/is-valid`,
-    //             {headers: {"Authorization": `Bearer ${fulInfo?.token}`}}).then((response) => {
-    //             setUserActive(response.data.isUserBlocked)
-    //         })
-    //             .catch((error) => {
-    //                 /**
-    //                  * If user is not valid, remove token and user from local storage
-    //                  */
-    //                 if (error?.response?.status === 401) {
-    //                     localStorage.removeItem('user');
-    //                     localStorage.removeItem('ChatFilter');
-    //                     navigate('/')
-    //                 }
-    //             });
-    //     }
-    // }, [])
+    useEffect(() => {
+        if (fulInfo !== null) {
+            axios.get(`${domen}/user/is-valid`,
+                {headers: {"Authorization": `Bearer ${fulInfo?.token}`}}).then((response) => {
+                setUserActive(response.data.isUserBlocked)
+            })
+                .catch((error) => {
+                    /**
+                     * If user is not valid, remove token and user from local storage
+                     */
+                    if (error?.response?.status === 401) {
+                        localStorage.removeItem('user');
+                        localStorage.removeItem('ChatFilter');
+                        navigate('/')
+                    }
+                });
+        }
+    }, [])
 
     return (
         <div className={`App  dark:bg-darkBlue bg-blue-50 relative`}>
             <Navbar/>
 
-            {/*{UserActive ? <UserBlock/> : <Main1/>}*/}
-            <Test/>
+            {UserActive ? <UserBlock/> : <Main1/>}
+
+            {/*<Test/>*/}
 
 
             <Footer/>

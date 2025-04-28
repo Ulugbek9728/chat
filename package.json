@@ -33,12 +33,10 @@
     "react-i18next": "^12.0.0",
     "react-router-dom": "^6.23.1",
     "react-toastify": "^10.0.5",
-    "socket.io-client": "^4.8.1",
     "sockjs-client": "^1.6.1",
     "styled-components": "^5.3.6",
     "tailwind-merge": "^2.3.0",
-    "tailwindcss-animate": "^1.0.7",
-    "websocket": "^1.0.35"
+    "tailwindcss-animate": "^1.0.7"
   },
   "devDependencies": {
     "@types/react": "^18.2.66",

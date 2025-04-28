@@ -1,7 +1,7 @@
 import {message, Popconfirm, Table} from 'antd';
 import {useEffect, useState} from "react";
 import axios from "axios";
-import {domen} from "@/domen.jsx";
+import {domen} from "../domen.jsx";
 
 
 function BlockUsers() {

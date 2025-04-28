@@ -1,6 +1,6 @@
 import {useEffect, useRef, useState} from "react";
 import axios from "axios";
-import {domen} from "@/domen.jsx";
+import {domen} from "../domen.jsx";
 import {PieChart} from '@mui/x-charts/PieChart';
 import {Button, DatePicker, Form} from 'antd';
 import {useTranslation} from "react-i18next";

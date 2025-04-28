@@ -1,18 +1,17 @@
 import "./chat.scss";
-import DarkMode from "@/Components/darkMode/darkMode.jsx";
+import DarkMode from "../darkMode/darkMode.jsx";
 import {useNavigate} from "react-router-dom";
 import data from "@emoji-mart/data";
 import Picker from "@emoji-mart/react";
 import {SmileTwoTone} from "@ant-design/icons";
 import {Form, Popover} from "antd";
 import {useEffect, useRef, useState} from "react";
-// import {Stomp } from "@stomp/stompjs";
 import SockJS from "sockjs-client";
-import Loading from "@/Components/loading/loading.jsx";
-import Typeng from "@/Components/typengChat/typeng.jsx";
+import Loading from "../loading/loading.jsx";
+import Typeng from "../typengChat/typeng.jsx";
 import {useTranslation} from "react-i18next";
 import {domen} from "../../domen.jsx";
-import {Client} from "@stomp/stompjs";
+import {Client,} from "@stomp/stompjs";
 
 
 
@@ -28,33 +27,37 @@ function Chat() {
     const [connected, setConnected] = useState(false);
 
     const stompClient = useRef(null);
-
     const navigate = useNavigate();
     const {t} = useTranslation();
 
     useEffect(() => {
+        initializeWebSocket()
+
+        return () => {
         if (!userInfo || currentChat?.status === "CLOSED") {
             localStorage.removeItem("currentChat");
             navigate("/");
-            return;
-        }
-        if (!stompClient.current) {initializeWebSocket();}
-
+        }}
     }, []);
 
 
     const initializeWebSocket = () => {
-        const socket = () => new SockJS(`${domen}/chat`);
+        const socket =  new SockJS(`${domen}/chat`);
         const client = new Client({
-            webSocketFactory: socket,
-            reconnectDelay: 5000, // avtomatik reconnect harakatlari
-            heartbeatIncoming: 8000,
-            heartbeatOutgoing: 8000,
-            debug: (str) => console.log("📡 STOMP DEBUG:", str),
+            webSocketFactory:() => socket,
+            // debug: function (str) {
+            //     // console.log(str);
+            // },
+            reconnectDelay: 5000,
+            heartbeatIncoming: 4000,
+            heartbeatOutgoing: 4000,
+            connectHeaders: {
+                Authorization: `Bearer ${userInfo?.token}`
+            }
         });
 
         client.onConnect = () => {
-            console.log("✅ WebSocket Connected!");
+            setConnected(true);
             onWebSocketConnected(client);
         };
 
@@ -62,10 +65,24 @@ function Chat() {
             console.error("❌ STOMP Error:", frame.headers['message']);
             console.error("Details:", frame.body);
         };
+        socket.onclose = function(event) {
+            console.log('WebSocket connection closed', event);
+            console.log('Close code:', event.code);
+            console.log('Close reason:', event.reason);
+        };
+        socket.onerror = function(error) {
+            console.error('WebSocket error observed:', error);
+        };
+
+        client.onWebSocketClose = (close) => {
+            console.log('WebSocket connection closed', close);
+            setConnected(false);
+            // setTimeout(initializeWebSocket, 5000);
+        };
+
 
         client.activate(); // Ulanishni boshlash
-
-        return client; // kerak bo‘lsa tashqaridan ham clientga murojaat qilsa bo‘ladi
+        stompClient.current = client
     };
 
     useEffect(() => {
@@ -82,24 +99,42 @@ function Chat() {
         } else {
             client.subscribe(`/match-chat/${userInfo?.id}`, handleSearchChat, {
                 Authorization: `Bearer ${userInfo?.token}`
-            });
+            })
         }
     };
 
     const subscribeToChat = (client, chatId) => {
+        if (!client.connected) {
+            console.error('Client hali ulanmagan. subscribeToChat chaqira olmaysiz.');
+            return;
+        }
+
+        // 1. CHAT SUBSCRIBE
         client.subscribe(
             `/message/chat/${chatId}`,
             handleChatMessages,
-            {Authorization: `Bearer ${userInfo?.token}`}
+            {
+                Authorization: `Bearer ${userInfo?.token}`
+            }
         );
-        client.send(
-            `/app/message/old-chats/${chatId}`,
-            {Authorization: `Bearer ${userInfo?.token}`}
-        );
+
+        // 2. OLD CHAT MESSAGES SO'RASH
+        client.publish({
+            destination: `/app/message/old-chats/${chatId}`,
+            body: "", // Agar server bo'sh body kutsa, shunaqa qoldirasiz
+            headers: {
+                Authorization: `Bearer ${userInfo?.token}`
+            }
+        });
+
+        console.log("✅ Subscribed to chat:", chatId);
     };
 
     const handleSearchChat = (msg) => {
+        console.log("handleSearchChat", msg)
+
         const message = JSON.parse(msg.body);
+        console.log("message", message?.chat?.status)
         switch (message?.chat?.status) {
             case "WAITING_TO_START":
                 setLoading(true);
@@ -117,8 +152,9 @@ function Chat() {
     };
 
     const handleChatMessages = (msg) => {
+        console.log("receivedMessage "+ msg.body)
+
         const receivedMessage = JSON.parse(msg.body);
-        console.log("receivedMessage "+receivedMessage)
         switch (receivedMessage.action) {
             case "new.message":
                 setMessages((prevMessages) => [...prevMessages, receivedMessage]);
@@ -147,49 +183,72 @@ function Chat() {
             chatId: currentChat?.chatId,
             content: message,
         };
-        console.log(chatMessage)
-        stompClient.current.send(
+        stompClient?.current?.publish(
             "/app/message/send",
             {Authorization: `Bearer ${userInfo?.token}`},
             JSON.stringify(chatMessage)
         );
+        console.log("✅ Yuborilgan xabar:", chatMessage);
         setMessage("");
     };
 
     function sendChatAction(action) {
-        console.log(currentChat)
-        stompClient?.current && stompClient?.current.send(
-            '/app/chat-action/send',
-            {Authorization: `Bearer ${userInfo?.token}`},
-            JSON.stringify({chatId: currentChat?.chatId, action: action})
-        );
+        stompClient.current.publish({
+            destination: '/app/chat-action/send',
+            headers: {
+                Authorization: `Bearer ${userInfo?.token}`
+            },
+            body: JSON.stringify({
+                chatId: currentChat.chatId,
+                action: action
+            })
+        });
     }
 
     function sendSearchChat() {
         const chatFilter = localStorage.getItem('ChatFilter');
-        if (chatFilter === null) {
-            navigate('/')
-            return
+        if (!chatFilter) {
+            console.error("ChatFilter topilmadi. Bosh sahifaga o'tyapmiz...");
+            navigate('/');
+            return;
         }
 
-        const request = JSON.parse(chatFilter);
+        let request;
+        try {
+            request = JSON.parse(chatFilter);
+        } catch (error) {
+            console.error("ChatFilter JSON parse xatoligi:", error);
+            navigate('/');
+            return;
+        }
+
         const body = {
             age: request.age,
             gender: request.gender,
             partnerGender: request.partnerGender,
             partnerAges: request.partnerAges
         };
-        setShowEndChatButton(false)
+
+        // UI ni yangilaymiz
+        setShowEndChatButton(false);
         setLoading(true);
-        setIsChatActive(false)
-        if (stompClient?.current?.active && connected) {
-            stompClient?.current?.send(
-                '/app/chat/match',
-                {Authorization: `Bearer ${userInfo?.token}`},
-                JSON.stringify(body)
-            );
+        setIsChatActive(false);
+
+        // WebSocket active va connectedligini tekshiramiz
+        if (stompClient.current.connected) {
+            stompClient.current.publish({
+                destination: "/app/chat/match",
+                body: JSON.stringify(body),
+                headers: {
+                    Authorization: `Bearer ${userInfo?.token}`
+                }
+            });
+            console.log("✅ Chat match request yuborildi:", body);
+        } else {
+            console.warn("⚠️ WebSocket hali ulanmagan, publish qilib bo‘lmadi.");
         }
     }
+
 
     const endChatSession = () => {
         setShowEndChatButton(false);
@@ -200,15 +259,15 @@ function Chat() {
         );
     };
     const finishChat = () => {
-        if (!isChatActive || stompClient.current == null) return;
+        if (!isChatActive || stompClient?.current == null) return;
 
-        stompClient.current.send(
+        stompClient?.current?.publish(
             "/app/chat/finish",
             {Authorization: `Bearer ${userInfo?.token}`},
             JSON.stringify({chatId: currentChat?.chatId})
         );
         endChatSession();
-        stompClient.current.disconnect();
+        stompClient.current.deactivate();
     };
 
     const content = (
@@ -246,9 +305,8 @@ function Chat() {
                     </div>
                     {
                         loading ? <Loading onCancel={() => {
-                                stompClient?.current.send('/app/chat/cancel', {Authorization: `Bearer ${userInfo?.token}`}, '');
-                                stompClient?.current && stompClient?.current?.disconnect(() => {
-                                }, {Authorization: `Bearer ${userInfo?.token}`});
+                                stompClient?.current?.publish('/app/chat/cancel', {Authorization: `Bearer ${userInfo?.token}`}, '');
+                                stompClient?.current && stompClient?.current.deactivate()
                             }}
                             /> :
                             <div>

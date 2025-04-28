@@ -5,11 +5,11 @@ import {createBrowserRouter, RouterProvider,} from "react-router-dom";
 import "./main.css"
 import PageNotFound from "./Components/PageNotFound.jsx";
 import "./utils/i18n";
-import Chat from "@/Components/chat/chat.jsx";
+import Chat from "./Components/chat/chat.jsx";
 import {ToastContainer} from "react-toastify";
 import "react-toastify/dist/ReactToastify.css"
-import Login from "@/Components/login/login.jsx";
-import AdminAll from "@/admin/adminAll.jsx";
+import Login from "./Components/login/login.jsx";
+import AdminAll from "./admin/adminAll.jsx";
 
 const router=createBrowserRouter([
     {

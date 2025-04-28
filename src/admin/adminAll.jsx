@@ -9,11 +9,11 @@ const { Header, Sider, Content } = Layout;
 
 import "./admin.scss"
 import {Route, Routes} from "react-router";
-import AllChats from "@/admin/AllChats.jsx";
-import BlockUsers from "@/admin/BlockUsers.jsx";
-import AllStatistika from "@/admin/AllStatistika.jsx";
+import AllChats from "./AllChats.jsx";
+import BlockUsers from "./BlockUsers.jsx";
+import AllStatistika from "./AllStatistika.jsx";
 import {Link, useNavigate} from "react-router-dom";
-import LanguageSwitcher from "@/LanguageSwitcher/index.jsx";
+import LanguageSwitcher from "../LanguageSwitcher/index.jsx";
 function AdminAll() {
     const [collapsed, setCollapsed] = useState(false);
     const navigate = useNavigate();

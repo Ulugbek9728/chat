@@ -1,6 +1,6 @@
 import Navbar from "./navbar/navbar.jsx";
 import img from "../../public/img/404.svg"
-import Footer from "@/Components/footer/footer.jsx";
+import Footer from "./footer/footer.jsx";
 
 function PageNotFound() {
     return (

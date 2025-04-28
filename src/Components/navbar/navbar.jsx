@@ -1,4 +1,4 @@
-import {style} from "@/utils/style.js";
+import {style} from "../../utils/style.js";
 import {NavLink} from "react-router-dom";
 import LanguageSwitcher from "../../LanguageSwitcher/index.jsx";
 

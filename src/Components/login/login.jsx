@@ -1,8 +1,8 @@
 import "./login.css"
-import Navbar from "@/Components/navbar/navbar.jsx";
+import Navbar from "../navbar/navbar.jsx";
 import {useEffect, useRef, useState} from "react";
-import Footer from "@/Components/footer/footer.jsx";
-import {style} from "@/utils/style.js";
+import Footer from "../footer/footer.jsx";
+import {style} from "../../utils/style.js";
 import axios from "axios";
 import {Form,Button, Input} from 'antd';
 import {domen} from "../../domen.jsx"
