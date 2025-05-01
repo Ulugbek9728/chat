@@ -27,7 +27,6 @@ function Loading({onCancel}) {
                             onClick={()=>{
                                 navigate("/")
                                 onCancel();
-
                             }}
                     >
                         {t("loding.StopButton")}

@@ -13,8 +13,6 @@ import {useTranslation} from "react-i18next";
 import {domen} from "../../domen.jsx";
 import {Client,} from "@stomp/stompjs";
 
-
-
 function Chat() {
     const userInfo = JSON.parse(localStorage.getItem("user"));
     const currentChat = JSON.parse(localStorage.getItem("currentChat"));
@@ -24,30 +22,36 @@ function Chat() {
     const [message, setMessage] = useState("");
     const [loading, setLoading] = useState(true);
     const [showEndChatButton, setShowEndChatButton] = useState(false);
-    const [connected, setConnected] = useState(false);
+    const initializedRef = useRef(false);
+
+    // const [connected, setConnected] = useState(false);
 
     const stompClient = useRef(null);
     const navigate = useNavigate();
     const {t} = useTranslation();
 
     useEffect(() => {
-        initializeWebSocket()
-
+        if (!initializedRef.current) {
+            initializeWebSocket();
+            initializedRef.current = true;
+        }
         return () => {
         if (!userInfo || currentChat?.status === "CLOSED") {
             localStorage.removeItem("currentChat");
             navigate("/");
         }}
     }, []);
+    // useEffect(() => {
+    //     console.log(stompClient?.current?.connected)
+    //     console.log(connected)
+    //     if (stompClient?.current?.connected && connected) sendSearchChat();
+    // }, [stompClient?.current?.connected, connected]);
 
 
     const initializeWebSocket = () => {
         const socket =  new SockJS(`${domen}/chat`);
         const client = new Client({
             webSocketFactory:() => socket,
-            // debug: function (str) {
-            //     // console.log(str);
-            // },
             reconnectDelay: 5000,
             heartbeatIncoming: 4000,
             heartbeatOutgoing: 4000,
@@ -57,7 +61,7 @@ function Chat() {
         });
 
         client.onConnect = () => {
-            setConnected(true);
+            // setConnected(true);
             onWebSocketConnected(client);
         };
 
@@ -76,8 +80,8 @@ function Chat() {
 
         client.onWebSocketClose = (close) => {
             console.log('WebSocket connection closed', close);
-            setConnected(false);
-            // setTimeout(initializeWebSocket, 5000);
+            // setConnected(false);
+           // initializeWebSocket();
         };
 
 
@@ -85,13 +89,9 @@ function Chat() {
         stompClient.current = client
     };
 
-    useEffect(() => {
-        if (stompClient?.current && connected) sendSearchChat();
-    }, [stompClient?.current, connected]);
-
     const onWebSocketConnected = (client) => {
-        setConnected(true);
         if (currentChat) {
+            console.log("currentChat", currentChat)
             subscribeToChat(client, currentChat.chatId);
             setIsChatActive(true);
             setLoading(false);
@@ -100,8 +100,11 @@ function Chat() {
             client.subscribe(`/match-chat/${userInfo?.id}`, handleSearchChat, {
                 Authorization: `Bearer ${userInfo?.token}`
             })
+            sendSearchChat()
+            // console.log(`✅ Subscribed to match-chat`);
         }
     };
+
 
     const subscribeToChat = (client, chatId) => {
         if (!client.connected) {
@@ -110,8 +113,7 @@ function Chat() {
         }
 
         // 1. CHAT SUBSCRIBE
-        client.subscribe(
-            `/message/chat/${chatId}`,
+        client.subscribe(`/message/chat/${chatId}`,
             handleChatMessages,
             {
                 Authorization: `Bearer ${userInfo?.token}`
@@ -152,9 +154,11 @@ function Chat() {
     };
 
     const handleChatMessages = (msg) => {
-        console.log("receivedMessage "+ msg.body)
+        console.log("receivedMessage "+ msg.body.action)
 
         const receivedMessage = JSON.parse(msg.body);
+        console.log(receivedMessage.action)
+        console.log(receivedMessage.messages)
         switch (receivedMessage.action) {
             case "new.message":
                 setMessages((prevMessages) => [...prevMessages, receivedMessage]);
@@ -183,10 +187,12 @@ function Chat() {
             chatId: currentChat?.chatId,
             content: message,
         };
-        stompClient?.current?.publish(
-            "/app/message/send",
-            {Authorization: `Bearer ${userInfo?.token}`},
-            JSON.stringify(chatMessage)
+        stompClient?.current?.publish({
+            destination:"/app/message/send",
+            headers: {
+                Authorization: `Bearer ${userInfo?.token}`
+            },
+            body:JSON.stringify(chatMessage)}
         );
         console.log("✅ Yuborilgan xabar:", chatMessage);
         setMessage("");
@@ -206,6 +212,7 @@ function Chat() {
     }
 
     function sendSearchChat() {
+        // console.log("sendSearchChat")
         const chatFilter = localStorage.getItem('ChatFilter');
         if (!chatFilter) {
             console.error("ChatFilter topilmadi. Bosh sahifaga o'tyapmiz...");
@@ -233,6 +240,7 @@ function Chat() {
         setShowEndChatButton(false);
         setLoading(true);
         setIsChatActive(false);
+        // console.log(stompClient.current.connected)
 
         // WebSocket active va connectedligini tekshiramiz
         if (stompClient.current.connected) {
@@ -249,7 +257,6 @@ function Chat() {
         }
     }
 
-
     const endChatSession = () => {
         setShowEndChatButton(false);
         setIsChatActive(false);
@@ -261,11 +268,13 @@ function Chat() {
     const finishChat = () => {
         if (!isChatActive || stompClient?.current == null) return;
 
-        stompClient?.current?.publish(
-            "/app/chat/finish",
-            {Authorization: `Bearer ${userInfo?.token}`},
-            JSON.stringify({chatId: currentChat?.chatId})
-        );
+        stompClient?.current?.publish({
+            destination:"/app/chat/finish",
+                headers: {
+                    Authorization: `Bearer ${userInfo?.token}`
+                },
+            body:JSON.stringify({chatId: currentChat?.chatId})
+    });
         endChatSession();
         stompClient.current.deactivate();
     };
@@ -305,7 +314,14 @@ function Chat() {
                     </div>
                     {
                         loading ? <Loading onCancel={() => {
-                                stompClient?.current?.publish('/app/chat/cancel', {Authorization: `Bearer ${userInfo?.token}`}, '');
+                                stompClient?.current?.publish(
+                                    {destination: "/app/chat/cancel",
+                                        body: '',
+                                        headers: {
+                                            Authorization: `Bearer ${userInfo?.token}`
+                                        }}
+
+                                );
                                 stompClient?.current && stompClient?.current.deactivate()
                             }}
                             /> :
